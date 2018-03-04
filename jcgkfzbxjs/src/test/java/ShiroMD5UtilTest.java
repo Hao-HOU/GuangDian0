@@ -12,7 +12,7 @@ public class ShiroMD5UtilTest {
     public void encode() {
         GDUser gdUser = new GDUser();
         gdUser.setUserNo("2120160998");
-        gdUser.setPassword("123456");
-        System.out.println(ShiroMD5Util.shiroMD5Encode(gdUser));
+        gdUser.setPassword("123");
+        System.out.println(ShiroMD5Util.shiroMD5Encode(gdUser.getUserNo(), gdUser.getPassword()));
     }
 }

@@ -1,9 +1,11 @@
 package bit.gd.realm;
 
+import bit.gd.common.Const;
 import bit.gd.dao.GDRUserRoleMapper;
 import bit.gd.dao.GDRoleMapper;
 import bit.gd.dao.GDUserMapper;
 import bit.gd.pojo.GDUser;
+import bit.gd.service.IUserManageService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -42,6 +44,9 @@ public class CustomRealm extends AuthorizingRealm {
     @Autowired
     GDRoleMapper gdRoleMapper;
 
+    @Autowired
+    IUserManageService iUserManageService;
+
     //用于认证
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
@@ -51,16 +56,20 @@ public class CustomRealm extends AuthorizingRealm {
         GDUser gdUser = gdUserMapper.selectByUserNo(userNo);
 
         if (gdUser != null) {
-            Object principal = gdUser.getUserNo();
-            Object credential = gdUser.getPassword();
-            String realName = getName();
-            ByteSource credentialSalt = ByteSource.Util.bytes(userNo);
+            if (gdUser.getStatus() == Const.Status.ACTIVE) {
+                Object principal = gdUser.getUserNo();
+                Object credential = gdUser.getPassword();
+                String realName = getName();
+                ByteSource credentialSalt = ByteSource.Util.bytes(userNo);
 
-            SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(principal, credential,
-                    credentialSalt, realName);
+                SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(principal, credential,
+                        credentialSalt, realName);
 
-            return info;
-
+                return info;
+            } else {
+                LOGGER.info("用户账号已被冻结");
+                throw new LockedAccountException();
+            }
         } else {
             LOGGER.info("用户账号不存在");
             throw new UnknownAccountException();
@@ -74,18 +83,11 @@ public class CustomRealm extends AuthorizingRealm {
 
         GDUser gdUser = gdUserMapper.selectByUserNo(userNo);
 
-        Set<String> roles = new HashSet<>();
-        List<Integer> rolesId = gdrUserRoleMapper.selectRolesIdByUserId(gdUser.getId());
-        if (!rolesId.isEmpty()) {
-            for (int id : rolesId) {
-                roles.add(gdRoleMapper.selectByPrimaryKey(id).getRoleName());
-            }
-        }
-
-        SecurityUtils.getSubject().getSession().setAttribute("currentUserName", gdUser.getName());
+        SecurityUtils.getSubject().getSession().setAttribute(Const.CURRENT_USER_NAME, gdUser.getName());
 
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
-        simpleAuthorizationInfo.setRoles(roles);
+        //获取当前用户的所有角色
+        simpleAuthorizationInfo.setRoles(iUserManageService.getUserRoles(gdUser.getId()));
 
         return simpleAuthorizationInfo;
     }

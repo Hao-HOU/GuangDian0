@@ -9,10 +9,19 @@ import java.util.Set;
  * @date 2018/3/2 14:44
  */
 public class UserVo {
+    private int id;
     private String userNo;
     private String name;
     private String phone;
     private Set<String> roles;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getUserNo() {
         return userNo;

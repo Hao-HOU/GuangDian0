@@ -10,11 +10,11 @@ import org.apache.shiro.util.ByteSource;
  * @date 2018/3/2 16:25
  */
 public class ShiroMD5Util {
-    public static String shiroMD5Encode(GDUser gdUser) {
+    public static String shiroMD5Encode(String userNo, String password) {
 
         String hashAlgorithm = "MD5";
-        Object credentials = gdUser.getPassword();
-        ByteSource salt = ByteSource.Util.bytes(gdUser.getUserNo());
+        Object credentials = password;
+        ByteSource salt = ByteSource.Util.bytes(userNo);
         int hashIterations = 1024;
         SimpleHash simpleHash = new SimpleHash(hashAlgorithm, credentials, salt, hashIterations);
 

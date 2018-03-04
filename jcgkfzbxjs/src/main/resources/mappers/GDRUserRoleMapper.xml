@@ -106,10 +106,10 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
-  <select id="selectRolesIdByUserId" resultType="int" parameterType="java.lang.Integer" >
+  <select id="selectRolesIdByUserId" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
     select
     role_id
     from gd_r_user_role
-    where id = #{id,jdbcType=INTEGER}
+    where user_id = #{userId,jdbcType=INTEGER}
   </select>
 </mapper>

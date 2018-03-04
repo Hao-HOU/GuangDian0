@@ -17,5 +17,5 @@ public interface GDRUserRoleMapper {
 
     int updateByPrimaryKey(GDRUserRole record);
 
-    List<Integer> selectRolesIdByUserId(Integer id);
+    List<Integer> selectRolesIdByUserId(Integer userId);
 }

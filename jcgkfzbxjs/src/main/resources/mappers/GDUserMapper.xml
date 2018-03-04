@@ -147,4 +147,61 @@
     from gd_user
     where user_no = #{userNo,jdbcType=VARCHAR}
   </select>
+
+    <select id="selectPasswordByUserNo" resultType="java.lang.String" parameterType="java.lang.String" >
+        select
+        password
+        from gd_user
+        where user_no = #{userNo,jdbcType=VARCHAR}
+    </select>
+
+    <update id="updatePasswordByUserNo" >
+    update gd_user
+    set password = #{newPassword,jdbcType=VARCHAR},
+      update_time = now()
+    where user_no = #{userNo,jdbcType=VARCHAR}
+    </update>
+
+    <select id="selectAllActiveUsers" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from gd_user
+        where status = 0
+        ORDER BY id ASC
+    </select>
+
+  <select id="selectAllFrozenUsers" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from gd_user
+    where status = 1
+    ORDER BY id ASC
+  </select>
+
+  <update id="updateInfoByUserNo">
+  update gd_user
+  <set>
+    <if test="newName != null" >
+      name = #{newName,jdbcType=VARCHAR},
+    </if>
+    <if test="newPhone != null" >
+      phone = #{newPhone,jdbcType=VARCHAR},
+    </if>
+      update_time = now()
+  </set>
+  where user_no = #{userNo,jdbcType=VARCHAR}
+  </update>
+
+    <update id="updateStatusByUserNo">
+    update gd_user
+    set
+    status = #{status,jdbcType=INTEGER},
+    update_time = now()
+    where user_no = #{userNo,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="deleteByUserNo" parameterType="java.lang.String" >
+        delete from gd_user
+        where user_no = #{userNo,jdbcType=VARCHAR}
+    </delete>
 </mapper>

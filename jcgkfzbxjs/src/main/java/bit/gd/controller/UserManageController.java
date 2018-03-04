@@ -1,6 +1,8 @@
 package bit.gd.controller;
 
+import bit.gd.common.Const;
 import bit.gd.common.ServerResponse;
+import bit.gd.pojo.GDRole;
 import bit.gd.pojo.GDUser;
 import bit.gd.service.IUserManageService;
 import bit.gd.util.ShiroMD5Util;
@@ -11,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * @author houhao
@@ -30,9 +32,10 @@ public class UserManageController {
     @ResponseBody
     public ServerResponse addUser(@RequestBody GDUser gdUser) {
         Subject subject = SecurityUtils.getSubject();
-        if (subject.hasRole("admin")) {
-            gdUser.setPassword(ShiroMD5Util.shiroMD5Encode(gdUser));
-            gdUser.setAdminName((String) subject.getSession().getAttribute("currentUserName"));
+        gdUser.setPassword(Const.INITIAL_PASSWORD);
+        if (subject.hasRole(Const.Role.ROLE_ADMIN)) {
+            gdUser.setPassword(ShiroMD5Util.shiroMD5Encode(gdUser.getUserNo(), gdUser.getPassword()));
+            gdUser.setAdminName((String) subject.getSession().getAttribute(Const.CURRENT_USER_NAME));
             int i = iUserManageService.addUser(gdUser);
             if (i > 0) {
                 return ServerResponse.createBySuccessMessage("添加用户成功");
@@ -50,28 +53,142 @@ public class UserManageController {
     @ResponseBody
     public ServerResponse<UserVo> getCurrentUserIno() {
         Subject subject = SecurityUtils.getSubject();
-        GDUser gdUser = iUserManageService.getCurrentUserInfo((String) subject.getPrincipal());
-        UserVo userVo = new UserVo();
-        userVo.setName(gdUser.getName());
-        userVo.setUserNo(gdUser.getUserNo());
-        userVo.setPhone(gdUser.getPhone());
+        return ServerResponse.createBySuccess(iUserManageService
+                .getCurrentUserInfo((String) subject.getPrincipal()));
+    }
 
-        Set<String> roles = new HashSet<>();
-        if (subject.hasRole("smo")) {
-            roles.add("smo");
+    @RequestMapping("modify_pwd.do")
+    @ResponseBody
+    public ServerResponse modifyThePassword(@RequestBody Map<String,Object> map) {
+        String oldPassword = map.get("oldPassword").toString();
+        String newPassword = map.get("newPassword").toString();
+
+        Subject subject = SecurityUtils.getSubject();
+        String userNo = (String) subject.getPrincipal();
+
+        String credentials = iUserManageService.getCurrentUserPassword(userNo);
+
+        if (credentials.equals(ShiroMD5Util.shiroMD5Encode(userNo, oldPassword))) {
+            if (iUserManageService.modifyThePassword(userNo, ShiroMD5Util.shiroMD5Encode(userNo, newPassword)) > 0) {
+                return ServerResponse.createBySuccessMessage("密码修改成功");
+            } else {
+                return ServerResponse.createByErrorMessage("密码修改错误");
+            }
+        } else {
+            return ServerResponse.createByErrorMessage("旧密码输入错误");
         }
-        if (subject.hasRole("opc")) {
-            roles.add("opc");
+    }
+
+    @RequestMapping("modify_user_info.do")
+    @ResponseBody
+    public ServerResponse modifyUserInfo(@RequestBody Map<String,Object> map) {
+        String newName = null;
+        String newPhone = null;
+
+        if (map.get("newName") != null && !"".equals(map.get("newName"))) {
+            newName = map.get("newName").toString();
         }
-        if (subject.hasRole("smpwo")) {
-            roles.add("smpwo");
-        }
-        if (subject.hasRole("pdod")) {
-            roles.add("pdod");
+        if (map.get("newPhone") != null && !"".equals(map.get("newPhone"))) {
+            newPhone = map.get("newPhone").toString();
         }
 
-        userVo.setRoles(roles);
+        Subject subject = SecurityUtils.getSubject();
+        if (iUserManageService.modifyUserInfo((String) subject.getPrincipal(), newName, newPhone) > 0) {
+            return ServerResponse.createBySuccess("修改信息成功");
+        } else {
+            return ServerResponse.createByErrorMessage("修改信息失败");
+        }
+    }
 
-        return ServerResponse.createBySuccess(userVo);
+    @RequestMapping("get_all_active_users.do")
+    @ResponseBody
+    public ServerResponse getAllActiveUsers(@RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.hasRole(Const.Role.ROLE_ADMIN)) {
+            return iUserManageService.getAllActiveUsers(pageNum, pageSize);
+        } else {
+            return ServerResponse.createByErrorMessage("当前用户不是管理员，无权限查看用户列表");
+        }
+    }
+
+    @RequestMapping("get_all_frozen_users.do")
+    @ResponseBody
+    public ServerResponse getAllFrozenUsers(@RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.hasRole(Const.Role.ROLE_ADMIN)) {
+            return iUserManageService.getAllFrozenUsers(pageNum, pageSize);
+        } else {
+            return ServerResponse.createByErrorMessage("当前用户不是管理员，无权限查看用户列表");
+        }
+    }
+
+    @RequestMapping("freeze_the_user.do")
+    @ResponseBody
+    public ServerResponse freezeTheUser(@RequestParam("userNo") String userNo) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.hasRole(Const.Role.ROLE_ADMIN)) {
+            if (iUserManageService.freezeTheUser(userNo) > 0) {
+                return ServerResponse.createBySuccessMessage("冻结用户账户成功");
+            } else {
+                return ServerResponse.createByErrorMessage("冻结用户账户失败");
+            }
+        } else {
+            return ServerResponse.createByErrorMessage("当前用户不是管理员，无权限冻结用户");
+        }
+    }
+
+    @RequestMapping("activate_the_user.do")
+    @ResponseBody
+    public ServerResponse activateTheUser(@RequestParam("userNo") String userNo) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.hasRole(Const.Role.ROLE_ADMIN)) {
+            if (iUserManageService.activateTheUser(userNo) > 0) {
+                return ServerResponse.createBySuccessMessage("激活用户账户成功");
+            } else {
+                return ServerResponse.createByErrorMessage("激活用户账户失败");
+            }
+        } else {
+            return ServerResponse.createByErrorMessage("当前用户不是管理员，无权限激活用户");
+        }
+    }
+
+    @RequestMapping("delete_the_user.do")
+    @ResponseBody
+    public ServerResponse deleteTheUser(@RequestParam("userNo") String userNo) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.hasRole(Const.Role.ROLE_ADMIN)) {
+            if (iUserManageService.deleteTheUSer(userNo) > 0) {
+                return ServerResponse.createBySuccessMessage("删除用户账户成功");
+            } else {
+                return ServerResponse.createByErrorMessage("删除用户账户失败");
+            }
+        } else {
+            return ServerResponse.createByErrorMessage("当前用户不是管理员，无权限删除用户");
+        }
+    }
+
+    @RequestMapping("add_role.do")
+    @ResponseBody
+    public ServerResponse addRole(@RequestParam("newRoleName") String newRoleName) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.hasRole(Const.Role.ROLE_ADMIN)) {
+            if (iUserManageService.getRole(newRoleName) != null) {
+                return ServerResponse.createByErrorMessage("该角色名已存在");
+            }
+
+            GDRole gdRole = new GDRole();
+            gdRole.setRoleName(newRoleName);
+            gdRole.setAdminName((String) subject.getSession().getAttribute(Const.CURRENT_USER_NAME));
+            if (iUserManageService.addRole(gdRole) > 0) {
+                return ServerResponse.createBySuccessMessage("添加角色成功");
+            } else {
+                return ServerResponse.createByErrorMessage("添加角色失败");
+            }
+
+        } else {
+            return ServerResponse.createByErrorMessage("当前用户不是管理员，无权限增加角色");
+        }
     }
 }

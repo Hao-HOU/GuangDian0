@@ -19,6 +19,14 @@
     from gd_role
     where id = #{id,jdbcType=INTEGER}
   </select>
+
+  <select id="selectByRoleName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from gd_role
+    where role_name = #{roleName,jdbcType=VARCHAR}
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from gd_role
     where id = #{id,jdbcType=INTEGER}
@@ -27,7 +35,7 @@
     insert into gd_role (id, role_name, admin_name, 
       create_time, update_time)
     values (#{id,jdbcType=INTEGER}, #{roleName,jdbcType=VARCHAR}, #{adminName,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+      now(), now())
   </insert>
   <insert id="insertSelective" parameterType="bit.gd.pojo.GDRole" >
     insert into gd_role
@@ -92,4 +100,10 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectAllRolesName" resultType="java.lang.String">
+    select
+    role_name
+    from gd_role
+  </select>
 </mapper>

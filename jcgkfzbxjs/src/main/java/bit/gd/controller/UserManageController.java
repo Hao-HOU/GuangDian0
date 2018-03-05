@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
@@ -204,7 +203,7 @@ public class UserManageController {
         }
     }
 
-    @RequestMapping("add_role_for_user.do")
+    @RequestMapping("change_the_role_of_the_user.do")
     @ResponseBody
     public ServerResponse addRoleForUser(@RequestBody Map<String,Object> map) {
         Subject subject = SecurityUtils.getSubject();
@@ -212,7 +211,7 @@ public class UserManageController {
             int userId = (int) map.get("userId");
             String roleName = map.get("roleName").toString();
             String adminName = (String) subject.getSession().getAttribute(Const.CURRENT_USER_NAME);
-            if (iUserManageService.addRoleForUser(userId, roleName, adminName) > 0) {
+            if (iUserManageService.changeTheRoleOfTheUser(userId, roleName, adminName) > 0) {
                 return ServerResponse.createBySuccessMessage("修改用户角色成功");
             } else {
                 return ServerResponse.createByErrorMessage("修改用户角色失败");
@@ -222,21 +221,5 @@ public class UserManageController {
         }
     }
 
-    @RequestMapping("delete_role_from_user.do")
-    @ResponseBody
-    public ServerResponse deleteRoleFromUser(@RequestBody Map<String,Object> map) {
-        Subject subject = SecurityUtils.getSubject();
-        if (subject.hasRole(Const.Role.ROLE_ADMIN)) {
-            int userId = (int) map.get("userId");
-            String roleName = map.get("roleName").toString();
-            if (iUserManageService.deleteRoleFromUser(userId, roleName) > 0) {
-                return ServerResponse.createBySuccessMessage("修改用户角色成功");
-            } else {
-                return ServerResponse.createByErrorMessage("修改用户角色失败");
-            }
-        } else {
-            return ServerResponse.createByErrorMessage("当前用户不是管理员，无权限改变用户角色");
-        }
-    }
 
 }

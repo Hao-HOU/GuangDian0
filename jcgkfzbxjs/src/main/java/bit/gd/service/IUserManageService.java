@@ -45,7 +45,5 @@ public interface IUserManageService {
 
     GDRole getRole(String roleName);
 
-    int addRoleForUser(int userId, String roleName, String adminName);
-
-    int deleteRoleFromUser(int userId, String roleName);
+    int changeTheRoleOfTheUser(int userId, String roleName, String adminName);
 }

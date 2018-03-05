@@ -21,4 +21,6 @@ public interface GDRUserRoleMapper {
     List<Integer> selectRolesIdByUserId(Integer userId);
 
     int deleteRoleFromUser(@Param("userId") int userId, @Param("roleId") int roleId);
+
+    GDRUserRole selectByUserIdAndRoleId(@Param("userId") int userId, @Param("roleId") int roleId);
 }

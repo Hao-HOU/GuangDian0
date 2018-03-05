@@ -75,7 +75,9 @@ public class UserManageServiceImpl implements IUserManageService {
         List<UserVo> userVoList = Lists.newArrayList();
         for (GDUser gdUser : activeUsersList) {
             UserVo userVo = assembleUserVo(gdUser);
-            userVoList.add(userVo);
+            if (!userVo.getRoles().contains(Const.Role.ROLE_ADMIN)) {
+                userVoList.add(userVo);
+            }
         }
 
         PageInfo pageInfo = new PageInfo(activeUsersList);
@@ -91,7 +93,9 @@ public class UserManageServiceImpl implements IUserManageService {
         List<UserVo> userVoList = Lists.newArrayList();
         for (GDUser gdUser : activeUsersList) {
             UserVo userVo = assembleUserVo(gdUser);
-            userVoList.add(userVo);
+            if (!userVo.getRoles().contains(Const.Role.ROLE_ADMIN)) {
+                userVoList.add(userVo);
+            }
         }
 
         PageInfo pageInfo = new PageInfo(activeUsersList);
@@ -150,7 +154,7 @@ public class UserManageServiceImpl implements IUserManageService {
         return gdRoleMapper.selectByRoleName(roleName);
     }
 
-    public int addRoleForUser(int userId, String roleName, String adminName) {
+    private int addRoleForUser(int userId, String roleName, String adminName) {
         GDRole gdRole = gdRoleMapper.selectByRoleName(roleName);
         GDRUserRole gdrUserRole = new GDRUserRole();
         gdrUserRole.setUserId(userId);
@@ -160,7 +164,17 @@ public class UserManageServiceImpl implements IUserManageService {
         return gdrUserRoleMapper.insert(gdrUserRole);
     }
 
-    public int deleteRoleFromUser(int userId, String roleName) {
+    private int deleteRoleFromUser(int userId, String roleName) {
         return gdrUserRoleMapper.deleteRoleFromUser(userId, gdRoleMapper.selectByRoleName(roleName).getId());
+    }
+
+    public int changeTheRoleOfTheUser(int userId, String roleName, String adminName) {
+        GDRUserRole gdrUserRole = gdrUserRoleMapper.selectByUserIdAndRoleId(userId,
+                gdRoleMapper.selectByRoleName(roleName).getId());
+        if (gdrUserRole == null) {
+            return addRoleForUser(userId, roleName, adminName);
+        } else {
+            return deleteRoleFromUser(userId, roleName);
+        }
     }
 }

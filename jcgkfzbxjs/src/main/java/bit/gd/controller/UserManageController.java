@@ -102,8 +102,10 @@ public class UserManageController {
 
     @RequestMapping("get_all_active_users.do")
     @ResponseBody
-    public ServerResponse getAllActiveUsers(@RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
-                                            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+    public ServerResponse getAllActiveUsers(@RequestBody Map<String,Object> map) {
+        int pageNum = (int) map.get("pageNum");
+        int pageSize = (int) map.get("pageSize");
+
         Subject subject = SecurityUtils.getSubject();
         if (subject.hasRole(Const.Role.ROLE_ADMIN)) {
             return iUserManageService.getAllActiveUsers(pageNum, pageSize);
@@ -114,8 +116,10 @@ public class UserManageController {
 
     @RequestMapping("get_all_frozen_users.do")
     @ResponseBody
-    public ServerResponse getAllFrozenUsers(@RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
-                                            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+    public ServerResponse getAllFrozenUsers(@RequestBody Map<String,Object> map) {
+        int pageNum = (int) map.get("pageNum");
+        int pageSize = (int) map.get("pageSize");
+
         Subject subject = SecurityUtils.getSubject();
         if (subject.hasRole(Const.Role.ROLE_ADMIN)) {
             return iUserManageService.getAllFrozenUsers(pageNum, pageSize);
@@ -126,7 +130,9 @@ public class UserManageController {
 
     @RequestMapping("freeze_the_user.do")
     @ResponseBody
-    public ServerResponse freezeTheUser(@RequestParam("userNo") String userNo) {
+    public ServerResponse freezeTheUser(@RequestBody Map<String,Object> map) {
+        String userNo = map.get("userNo").toString();
+
         Subject subject = SecurityUtils.getSubject();
         if (subject.hasRole(Const.Role.ROLE_ADMIN)) {
             if (iUserManageService.freezeTheUser(userNo) > 0) {
@@ -141,7 +147,9 @@ public class UserManageController {
 
     @RequestMapping("activate_the_user.do")
     @ResponseBody
-    public ServerResponse activateTheUser(@RequestParam("userNo") String userNo) {
+    public ServerResponse activateTheUser(@RequestBody Map<String,Object> map) {
+        String userNo = map.get("userNo").toString();
+
         Subject subject = SecurityUtils.getSubject();
         if (subject.hasRole(Const.Role.ROLE_ADMIN)) {
             if (iUserManageService.activateTheUser(userNo) > 0) {
@@ -156,10 +164,12 @@ public class UserManageController {
 
     @RequestMapping("delete_the_user.do")
     @ResponseBody
-    public ServerResponse deleteTheUser(@RequestParam("userNo") String userNo) {
+    public ServerResponse deleteTheUser(@RequestBody Map<String,Object> map) {
+        String userNo = map.get("userNo").toString();
+
         Subject subject = SecurityUtils.getSubject();
         if (subject.hasRole(Const.Role.ROLE_ADMIN)) {
-            if (iUserManageService.deleteTheUSer(userNo) > 0) {
+            if (iUserManageService.deleteTheUser(userNo) > 0) {
                 return ServerResponse.createBySuccessMessage("删除用户账户成功");
             } else {
                 return ServerResponse.createByErrorMessage("删除用户账户失败");
@@ -171,7 +181,9 @@ public class UserManageController {
 
     @RequestMapping("add_role.do")
     @ResponseBody
-    public ServerResponse addRole(@RequestParam("newRoleName") String newRoleName) {
+    public ServerResponse addRole(@RequestBody Map<String,Object> map) {
+        String newRoleName = map.get("newRoleName").toString();
+
         Subject subject = SecurityUtils.getSubject();
         if (subject.hasRole(Const.Role.ROLE_ADMIN)) {
             if (iUserManageService.getRole(newRoleName) != null) {
@@ -191,4 +203,40 @@ public class UserManageController {
             return ServerResponse.createByErrorMessage("当前用户不是管理员，无权限增加角色");
         }
     }
+
+    @RequestMapping("add_role_for_user.do")
+    @ResponseBody
+    public ServerResponse addRoleForUser(@RequestBody Map<String,Object> map) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.hasRole(Const.Role.ROLE_ADMIN)) {
+            int userId = (int) map.get("userId");
+            String roleName = map.get("roleName").toString();
+            String adminName = (String) subject.getSession().getAttribute(Const.CURRENT_USER_NAME);
+            if (iUserManageService.addRoleForUser(userId, roleName, adminName) > 0) {
+                return ServerResponse.createBySuccessMessage("修改用户角色成功");
+            } else {
+                return ServerResponse.createByErrorMessage("修改用户角色失败");
+            }
+        } else {
+            return ServerResponse.createByErrorMessage("当前用户不是管理员，无权限改变用户角色");
+        }
+    }
+
+    @RequestMapping("delete_role_from_user.do")
+    @ResponseBody
+    public ServerResponse deleteRoleFromUser(@RequestBody Map<String,Object> map) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.hasRole(Const.Role.ROLE_ADMIN)) {
+            int userId = (int) map.get("userId");
+            String roleName = map.get("roleName").toString();
+            if (iUserManageService.deleteRoleFromUser(userId, roleName) > 0) {
+                return ServerResponse.createBySuccessMessage("修改用户角色成功");
+            } else {
+                return ServerResponse.createByErrorMessage("修改用户角色失败");
+            }
+        } else {
+            return ServerResponse.createByErrorMessage("当前用户不是管理员，无权限改变用户角色");
+        }
+    }
+
 }

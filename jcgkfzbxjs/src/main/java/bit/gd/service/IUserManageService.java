@@ -6,6 +6,7 @@ import bit.gd.pojo.GDUser;
 import bit.gd.vo.UserVo;
 import com.github.pagehelper.PageInfo;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -20,7 +21,9 @@ public interface IUserManageService {
 
     String getCurrentUserPassword(String userNo);
 
-    Set<String> getAllRoles();
+    Set<String> getAllRolesName();
+
+    List<GDRole> getAllRoles();
 
     int modifyThePassword (String userNo, String newPassword);
 
@@ -36,9 +39,13 @@ public interface IUserManageService {
 
     int activateTheUser(String userNo);
 
-    int deleteTheUSer(String userNo);
+    int deleteTheUser(String userNo);
 
     int addRole(GDRole gdRole);
 
     GDRole getRole(String roleName);
+
+    int addRoleForUser(int userId, String roleName, String adminName);
+
+    int deleteRoleFromUser(int userId, String roleName);
 }

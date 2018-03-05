@@ -3,6 +3,7 @@ package bit.gd.dao;
 import bit.gd.pojo.GDRole;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Set;
 
 public interface GDRoleMapper {
@@ -22,5 +23,5 @@ public interface GDRoleMapper {
 
     Set<String> selectAllRolesName();
 
-
+    List<GDRole> selectAllRoles();
 }

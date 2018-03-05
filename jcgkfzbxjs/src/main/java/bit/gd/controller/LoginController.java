@@ -24,12 +24,6 @@ import java.util.Set;
 @Controller
 public class LoginController {
 
-    @RequestMapping(value = "test.do", method = RequestMethod.GET)
-    @ResponseBody
-    public ServerResponse testConnect() {
-        return ServerResponse.createBySuccessMessage("连接成功");
-    }
-
     @RequestMapping(value = "login.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse signIn(@RequestBody User user) {

@@ -5,6 +5,7 @@ import bit.gd.common.ServerResponse;
 import bit.gd.dao.GDRUserRoleMapper;
 import bit.gd.dao.GDRoleMapper;
 import bit.gd.dao.GDUserMapper;
+import bit.gd.pojo.GDRUserRole;
 import bit.gd.pojo.GDRole;
 import bit.gd.pojo.GDUser;
 import bit.gd.service.IUserManageService;
@@ -55,8 +56,12 @@ public class UserManageServiceImpl implements IUserManageService {
         return gdUserMapper.selectPasswordByUserNo(userNo);
     }
 
-    public Set<String> getAllRoles() {
+    public Set<String> getAllRolesName() {
         return gdRoleMapper.selectAllRolesName();
+    }
+
+    public List<GDRole> getAllRoles() {
+        return gdRoleMapper.selectAllRoles();
     }
 
     public int modifyThePassword (String userNo, String newPassword) {
@@ -133,7 +138,7 @@ public class UserManageServiceImpl implements IUserManageService {
         return gdUserMapper.updateStatusByUserNo(userNo, Const.Status.ACTIVE);
     }
 
-    public int deleteTheUSer(String userNo) {
+    public int deleteTheUser(String userNo) {
         return gdUserMapper.deleteByUserNo(userNo);
     }
 
@@ -143,5 +148,19 @@ public class UserManageServiceImpl implements IUserManageService {
 
     public GDRole getRole(String roleName) {
         return gdRoleMapper.selectByRoleName(roleName);
+    }
+
+    public int addRoleForUser(int userId, String roleName, String adminName) {
+        GDRole gdRole = gdRoleMapper.selectByRoleName(roleName);
+        GDRUserRole gdrUserRole = new GDRUserRole();
+        gdrUserRole.setUserId(userId);
+        gdrUserRole.setRoleId(gdRole.getId());
+        gdrUserRole.setAdminName(adminName);
+
+        return gdrUserRoleMapper.insert(gdrUserRole);
+    }
+
+    public int deleteRoleFromUser(int userId, String roleName) {
+        return gdrUserRoleMapper.deleteRoleFromUser(userId, gdRoleMapper.selectByRoleName(roleName).getId());
     }
 }

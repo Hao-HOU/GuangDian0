@@ -106,4 +106,10 @@
     role_name
     from gd_role
   </select>
+
+  <select id="selectAllRoles" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from gd_role
+  </select>
 </mapper>

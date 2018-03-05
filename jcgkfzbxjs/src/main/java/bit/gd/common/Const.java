@@ -1,9 +1,5 @@
 package bit.gd.common;
 
-import com.google.common.collect.Sets;
-
-import java.util.Set;
-
 /**
  * Created by Hao HOU on 2017/8/2.
  */
@@ -17,6 +13,10 @@ public class Const {
     public interface Role {
         String ROLE_USER = "student";//普通用户
         String ROLE_ADMIN = "admin";//管理员
+        String ROLE_SMO = "smo";
+        String ROLE_OPC = "opc";
+        String ROLE_SMPWO = "smpwo";
+        String ROLE_PDOD = "pdod";
     }
 
     public interface Status {

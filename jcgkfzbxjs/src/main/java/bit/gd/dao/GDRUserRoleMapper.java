@@ -1,6 +1,7 @@
 package bit.gd.dao;
 
 import bit.gd.pojo.GDRUserRole;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -18,4 +19,6 @@ public interface GDRUserRoleMapper {
     int updateByPrimaryKey(GDRUserRole record);
 
     List<Integer> selectRolesIdByUserId(Integer userId);
+
+    int deleteRoleFromUser(@Param("userId") int userId, @Param("roleId") int roleId);
 }

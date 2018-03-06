@@ -31,10 +31,12 @@
                 /images/** = anon
                 /js/** = anon
                 /style/** = anon
+
+                / = anon
                 /index.html = anon
 
-                /login.do = anon
-                /logout.do = logout
+                /api/login.do = anon
+                /api/logout.do = logout
 
                 /** = authc
             </value>

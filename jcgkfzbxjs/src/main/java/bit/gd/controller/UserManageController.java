@@ -23,6 +23,7 @@ import java.util.Map;
  * @date 2018/3/2 16:32
  */
 @Controller
+@RequestMapping("/api")
 public class UserManageController {
     @Autowired
     IUserManageService iUserManageService;
@@ -93,7 +94,7 @@ public class UserManageController {
 
         Subject subject = SecurityUtils.getSubject();
         if (iUserManageService.modifyUserInfo((String) subject.getPrincipal(), newName, newPhone) > 0) {
-            return ServerResponse.createBySuccess("修改信息成功");
+            return ServerResponse.createBySuccessMessage("修改信息成功");
         } else {
             return ServerResponse.createByErrorMessage("修改信息失败");
         }

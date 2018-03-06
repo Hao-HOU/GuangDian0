@@ -22,6 +22,7 @@ import java.util.Set;
  * @date 2018/2/28 22:04
  */
 @Controller
+@RequestMapping("/api")
 public class LoginController {
 
     @RequestMapping(value = "login.do", method = RequestMethod.POST)

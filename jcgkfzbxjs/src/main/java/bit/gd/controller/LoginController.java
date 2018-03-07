@@ -8,6 +8,8 @@ import bit.gd.vo.UserVo;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +27,8 @@ import java.util.Set;
 @RequestMapping("/api")
 public class LoginController {
 
+    private final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
+
     @RequestMapping(value = "login.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse signIn(@RequestBody User user) {
@@ -36,16 +40,18 @@ public class LoginController {
             try {
                 subject.login(token);
             } catch (UnknownAccountException uae) {
-                return ServerResponse.createByErrorMessage("用户名不存在");
+                return ServerResponse.createByErrorMessage("账号不存在");
             } catch (IncorrectCredentialsException ice) {
+                LOGGER.info("用户[{}]密码输入错误", user.getUsername());
                 return ServerResponse.createByErrorMessage("密码错误");
             } catch (LockedAccountException lae) {
-                return ServerResponse.createByErrorMessage("账号被冻结");
+                return ServerResponse.createByErrorMessage("账号已被冻结");
             } catch (AuthenticationException ae) {
                 return ServerResponse.createByErrorMessage("未知错误");
             }
         }
 
+        LOGGER.info("用户[{}]成功登录系统", user.getUsername());
         return ServerResponse.createBySuccess();
     }
 }

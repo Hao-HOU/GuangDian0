@@ -167,6 +167,7 @@
         <include refid="Base_Column_List" />
         from gd_user
         where status = 0
+        and id not in (select user_id from gd_r_user_role where role_id = (select id from gd_role where role_name = "admin"))
         ORDER BY id ASC
     </select>
 
@@ -175,6 +176,7 @@
     <include refid="Base_Column_List" />
     from gd_user
     where status = 1
+    and id not in (select user_id from gd_r_user_role where role_id = (select id from gd_role where role_name = "admin"))
     ORDER BY id ASC
   </select>
 

@@ -75,9 +75,7 @@ public class UserManageServiceImpl implements IUserManageService {
         List<UserVo> userVoList = Lists.newArrayList();
         for (GDUser gdUser : activeUsersList) {
             UserVo userVo = assembleUserVo(gdUser);
-            if (!userVo.getRoles().contains(Const.Role.ROLE_ADMIN)) {
-                userVoList.add(userVo);
-            }
+            userVoList.add(userVo);
         }
 
         PageInfo pageInfo = new PageInfo(activeUsersList);
@@ -89,16 +87,14 @@ public class UserManageServiceImpl implements IUserManageService {
     public ServerResponse<PageInfo> getAllFrozenUsers(int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
 
-        List<GDUser> activeUsersList = gdUserMapper.selectAllFrozenUsers();
+        List<GDUser> frozenUsersList = gdUserMapper.selectAllFrozenUsers();
         List<UserVo> userVoList = Lists.newArrayList();
-        for (GDUser gdUser : activeUsersList) {
+        for (GDUser gdUser : frozenUsersList) {
             UserVo userVo = assembleUserVo(gdUser);
-            if (!userVo.getRoles().contains(Const.Role.ROLE_ADMIN)) {
-                userVoList.add(userVo);
-            }
+            userVoList.add(userVo);
         }
 
-        PageInfo pageInfo = new PageInfo(activeUsersList);
+        PageInfo pageInfo = new PageInfo(frozenUsersList);
         pageInfo.setList(userVoList);
 
         return ServerResponse.createBySuccess(pageInfo);

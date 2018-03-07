@@ -6,7 +6,7 @@ package bit.gd.request;
  * @date 2018/3/1 00:24
  */
 public class User {
-    private String username;
+    private String username;//账号，学号或者工号
     private String password;
 
     public String getUsername() {

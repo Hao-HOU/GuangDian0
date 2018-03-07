@@ -67,11 +67,11 @@ public class CustomRealm extends AuthorizingRealm {
 
                 return info;
             } else {
-                LOGGER.info("用户账号已被冻结");
+                LOGGER.info("用户账号[{}]已被冻结", userNo);
                 throw new LockedAccountException();
             }
         } else {
-            LOGGER.info("用户账号不存在");
+            LOGGER.info("用户账号[{}]不存在", userNo);
             throw new UnknownAccountException();
         }
     }

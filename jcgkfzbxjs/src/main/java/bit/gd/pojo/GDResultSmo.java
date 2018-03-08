@@ -5,7 +5,7 @@ import java.util.Date;
 public class GDResultSmo {
     private Integer id;
 
-    private Integer parameters;
+    private Integer parametersId;
 
     private String userNo;
 
@@ -29,9 +29,9 @@ public class GDResultSmo {
 
     private Date createTime;
 
-    public GDResultSmo(Integer id, Integer parameters, String userNo, String errorMat, String errorWeightMat, String maskPatternMat, String printImageMat, String sourcePatternMat, String maskBinaryPng, String printImagePng, String sourcePatternPng, String errorConvergencePng, Date createTime) {
+    public GDResultSmo(Integer id, Integer parametersId, String userNo, String errorMat, String errorWeightMat, String maskPatternMat, String printImageMat, String sourcePatternMat, String maskBinaryPng, String printImagePng, String sourcePatternPng, String errorConvergencePng, Date createTime) {
         this.id = id;
-        this.parameters = parameters;
+        this.parametersId = parametersId;
         this.userNo = userNo;
         this.errorMat = errorMat;
         this.errorWeightMat = errorWeightMat;
@@ -57,12 +57,12 @@ public class GDResultSmo {
         this.id = id;
     }
 
-    public Integer getParameters() {
-        return parameters;
+    public Integer getParametersId() {
+        return parametersId;
     }
 
-    public void setParameters(Integer parameters) {
-        this.parameters = parameters;
+    public void setParametersId(Integer parametersId) {
+        this.parametersId = parametersId;
     }
 
     public String getUserNo() {

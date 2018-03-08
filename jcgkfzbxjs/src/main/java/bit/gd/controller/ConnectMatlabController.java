@@ -38,19 +38,18 @@ public class ConnectMatlabController {
     @Autowired
     IDataPersistenceService iDataPersistenceService;
 
-    @RequestMapping("smo.do")
+    @RequestMapping("smo_simulate.do")
     @ResponseBody
-    public ServerResponse smo(@RequestBody GDParameterSmo gdParameterSmo) {
+    public ServerResponse smoSimulate(@RequestBody GDParameterSmo gdParameterSmo) {
         Subject subject = SecurityUtils.getSubject();
         if (subject.hasRole(Const.Role.ROLE_ADMIN) || subject.hasRole(Const.Role.ROLE_SMO)) {
             gdParameterSmo.setUserNo((String) subject.getPrincipal());
             if (iDataPersistenceService.checkSmoParametersSimulated(gdParameterSmo) != null) {
                 return ServerResponse.createByErrorMessage("该组参数已仿真过，可直接查看");
             }
-            if (iDataPersistenceService.storeSmoParameters(gdParameterSmo) > 0) {
+            if (iDataPersistenceService.storeSmoParameters(gdParameterSmo) != null) {
                 LOGGER.info("用户[{}]运行SMO模块所用参数存储成功，仿真开始...", subject.getPrincipal());
-//                return iConnectMatlabService.firstTrySMO();
-                return ServerResponse.createBySuccessMessage("测试参数传输，暂不运行仿真");
+                return iConnectMatlabService.executeSmoSimulation(gdParameterSmo);
             } else {
                 LOGGER.info("用户[{}]运行SMO模块所用参数存储失败", subject.getPrincipal());
                 return ServerResponse.createByErrorMessage("参数存储失败，仿真不能开始");

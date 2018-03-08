@@ -1,6 +1,7 @@
 package bit.gd.controller;
 
 import bit.gd.common.Const;
+import bit.gd.common.ResponseCode;
 import bit.gd.common.ServerResponse;
 import bit.gd.pojo.GDRole;
 import bit.gd.pojo.GDUser;
@@ -60,6 +61,10 @@ public class UserManageController {
     @RequestMapping("modify_pwd.do")
     @ResponseBody
     public ServerResponse modifyThePassword(@RequestBody Map<String,Object> map) {
+        if (map.get("oldPassword") == null || map.get("newPassword") == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),
+                    "参数错误");
+        }
         String oldPassword = map.get("oldPassword").toString();
         String newPassword = map.get("newPassword").toString();
 
@@ -103,6 +108,11 @@ public class UserManageController {
     @RequestMapping("get_all_active_users.do")
     @ResponseBody
     public ServerResponse getAllActiveUsers(@RequestBody Map<String,Object> map) {
+        if (map.get("pageNum") == null || map.get("pageSize") == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),
+                    "参数错误");
+        }
+
         int pageNum = (int) map.get("pageNum");
         int pageSize = (int) map.get("pageSize");
 
@@ -117,6 +127,11 @@ public class UserManageController {
     @RequestMapping("get_all_frozen_users.do")
     @ResponseBody
     public ServerResponse getAllFrozenUsers(@RequestBody Map<String,Object> map) {
+        if (map.get("pageNum") == null || map.get("pageSize") == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),
+                    "参数错误");
+        }
+
         int pageNum = (int) map.get("pageNum");
         int pageSize = (int) map.get("pageSize");
 
@@ -131,6 +146,10 @@ public class UserManageController {
     @RequestMapping("freeze_the_user.do")
     @ResponseBody
     public ServerResponse freezeTheUser(@RequestBody Map<String,Object> map) {
+        if (map.get("userNo") == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),
+                    "参数错误");
+        }
         String userNo = map.get("userNo").toString();
 
         Subject subject = SecurityUtils.getSubject();
@@ -148,6 +167,10 @@ public class UserManageController {
     @RequestMapping("activate_the_user.do")
     @ResponseBody
     public ServerResponse activateTheUser(@RequestBody Map<String,Object> map) {
+        if (map.get("userNo") == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),
+                    "参数错误");
+        }
         String userNo = map.get("userNo").toString();
 
         Subject subject = SecurityUtils.getSubject();
@@ -165,6 +188,10 @@ public class UserManageController {
     @RequestMapping("delete_the_user.do")
     @ResponseBody
     public ServerResponse deleteTheUser(@RequestBody Map<String,Object> map) {
+        if (map.get("userNo") == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),
+                    "参数错误");
+        }
         String userNo = map.get("userNo").toString();
 
         Subject subject = SecurityUtils.getSubject();
@@ -182,6 +209,10 @@ public class UserManageController {
     @RequestMapping("add_role.do")
     @ResponseBody
     public ServerResponse addRole(@RequestBody Map<String,Object> map) {
+        if (map.get("newRoleName") == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),
+                    "参数错误");
+        }
         String newRoleName = map.get("newRoleName").toString();
 
         Subject subject = SecurityUtils.getSubject();
@@ -207,6 +238,10 @@ public class UserManageController {
     @RequestMapping("change_the_role_of_the_user.do")
     @ResponseBody
     public ServerResponse addRoleForUser(@RequestBody Map<String,Object> map) {
+        if (map.get("userId") == null || map.get("roleName") == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),
+                    "参数错误");
+        }
         Subject subject = SecurityUtils.getSubject();
         if (subject.hasRole(Const.Role.ROLE_ADMIN)) {
             int userId = (int) map.get("userId");

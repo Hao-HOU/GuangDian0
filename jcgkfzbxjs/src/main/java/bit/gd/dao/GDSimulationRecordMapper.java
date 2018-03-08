@@ -2,6 +2,8 @@ package bit.gd.dao;
 
 import bit.gd.pojo.GDSimulationRecord;
 
+import java.util.List;
+
 public interface GDSimulationRecordMapper {
     int deleteByPrimaryKey(Integer id);
 
@@ -14,4 +16,8 @@ public interface GDSimulationRecordMapper {
     int updateByPrimaryKeySelective(GDSimulationRecord record);
 
     int updateByPrimaryKey(GDSimulationRecord record);
+
+    List<GDSimulationRecord> selectAllSimulationRecords();
+
+    List<GDSimulationRecord> selectAuthorizedModulesSimulationRecords(List<String> roles);
 }

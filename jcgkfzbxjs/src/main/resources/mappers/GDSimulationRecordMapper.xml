@@ -32,7 +32,7 @@
       end_time, create_time)
     values (#{id,jdbcType=INTEGER}, #{userNo,jdbcType=VARCHAR}, #{moduleName,jdbcType=VARCHAR}, 
       #{parametersId,jdbcType=INTEGER}, #{resultId,jdbcType=INTEGER}, #{startTime,jdbcType=TIMESTAMP}, 
-      #{endTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP})
+      #{endTime,jdbcType=TIMESTAMP}, now())
   </insert>
   <insert id="insertSelective" parameterType="bit.gd.pojo.GDSimulationRecord" >
     insert into gd_simulation_record
@@ -127,4 +127,20 @@
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectAllSimulationRecords" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from gd_simulation_record
+  </select>
+
+  <select id="selectAuthorizedModulesSimulationRecords" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from gd_simulation_record
+    where module_name in
+    <foreach collection="list" open="(" close=")" separator="," item="moduleName" index="i">
+      #{moduleName}
+    </foreach>
+  </select>
 </mapper>

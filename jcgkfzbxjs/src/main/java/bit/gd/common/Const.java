@@ -19,6 +19,13 @@ public class Const {
         String ROLE_PDOD = "pdod";
     }
 
+    public interface Module {
+        String MODULE_SMO = "smo";
+        String MODULE_OPC = "opc";
+        String MODULE_SMPWO = "smpwo";
+        String MODULE_PDOD = "pdod";
+    }
+
     public interface Status {
         int ACTIVE = 0;//账号可用
         int FROZEN = 1;//账号不可用

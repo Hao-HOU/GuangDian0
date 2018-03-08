@@ -1,11 +1,20 @@
 package bit.gd.service.impl;
 
+import bit.gd.common.Const;
 import bit.gd.common.ServerResponse;
+import bit.gd.pojo.GDParameterSmo;
+import bit.gd.pojo.GDResultSmo;
+import bit.gd.pojo.GDSimulationRecord;
 import bit.gd.service.IConnectMatlabService;
-import euvsmosyy.SMO;
+import bit.gd.service.IDataPersistenceService;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * Created by Hao HOU on 2018/3/6.
@@ -14,47 +23,68 @@ import org.springframework.stereotype.Service;
 public class ConnectMatlabServiceImpl implements IConnectMatlabService {
     private static final Logger LOGGER = LoggerFactory.getLogger(IConnectMatlabService.class);
 
-    public ServerResponse firstTrySMO() {
-        double N = 201;//Mask Dimension
-        double Pixel = 11;//Pixel Size
-        double reflect = Math.sqrt(64/100);//Reflect
-        double absorb = Math.sqrt(0.5/100);//Absorb
-        double b_max_near_shadowing = 1.424;//Shadow Near
-        double b_max_far_shadowing = 1.835;//Shadow Far
+    @Autowired
+    IDataPersistenceService iDataPersistenceService;
 
-//source parameters////
-        double lamda=13.5;  //Wavelength
-        double r1=0.24;//Sigma in                                                                     //内相干因子
-        double r2=0.84;//Sigma out
-        double TIS = 16.9/100;
-        double NAi=0.25; //NA
-        double R = 4;//Ratio
+    public ServerResponse executeSmoSimulation(GDParameterSmo gdParameterSmo) {
+        Date startTime = new Date();
+//        SMO smo = null;
+//        try {
+//            smo = new SMO();
+//            smo.EUV_Pixelated_SMO_MAIN(4, gdParameterSmo.getCoreNum(), gdParameterSmo.getMaskDimension(),
+//                    gdParameterSmo.getPixelSize(), gdParameterSmo.getReflect(), gdParameterSmo.getAbsorb(),
+//                    gdParameterSmo.getShadowNear(), gdParameterSmo.getShadowFar(), gdParameterSmo.getWavelength(),
+//                    gdParameterSmo.getSigmaIn(), gdParameterSmo.getSigmaOut(), gdParameterSmo.getTis(),
+//                    gdParameterSmo.getNa(), gdParameterSmo.getRatio(), gdParameterSmo.getStepSource(),
+//                    gdParameterSmo.getOmegaSourceQua(), gdParameterSmo.getStepMaskMain(), gdParameterSmo.getStepMaskSraf(),
+//                    gdParameterSmo.getOmegaMaskQua(), gdParameterSmo.getMaxloopSmo(), gdParameterSmo.getThreshold(),
+//                    gdParameterSmo.getTr(), gdParameterSmo.getaSource(),
+//                    PropertiesUtil.getProperty("ftp.server.path") + gdParameterSmo.getInputMask());
+//        } catch (MWException e) {
+//            return ServerResponse.createByErrorMessage(e.getMessage());
+//        }
 
-        //Optimization Parameters////
-        double step_source = 0.03;
-        double omega_source_qua = 0.001;
-        double step_mask_main = 0.1;  // weight: try:60, best:20; noweight:40
-        double step_mask_SRAF = 0.1;
-        double omega_mask_qua=0.0005;
-        double maxloop_SMO = 1;
-        double threshold = 100;
-        double tr=0.25; //0.02;
-        double a_source = 25;
+        try {
+            Thread.sleep(10000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Date endTime = new Date();
 
-        int CoreNum = 4;
-        String input_mask = "E:/ztest/target4";
+        Subject subject = SecurityUtils.getSubject();
 
+        LOGGER.info("存储仿真结果...");
+        GDResultSmo gdResultSmo = new GDResultSmo();
+        gdResultSmo.setParametersId(gdParameterSmo.getId());
+        gdResultSmo.setUserNo((String) subject.getPrincipal());
+        gdResultSmo.setErrorMat("error.mat");
+        gdResultSmo.setErrorConvergencePng("error_convergence.png");
+        gdResultSmo.setErrorWeightMat("error_weight.mat");
+        gdResultSmo.setMaskBinaryPng("mask_binary.png");
+        gdResultSmo.setMaskPatternMat("mask_pattern.mat");
+        gdResultSmo.setPrintImageMat("print_image.mat");
+        gdResultSmo.setPrintImagePng("print_image.png");
+        gdResultSmo.setSourcePatternMat("source_pattern.mat");
+        gdResultSmo.setSourcePatternPng("source_pattern.png");
 
-       try {
-           SMO smo = new SMO();
-           smo.EUV_Pixelated_SMO_MAIN(4, CoreNum, N, Pixel, reflect, absorb, b_max_near_shadowing, b_max_far_shadowing,
-                   lamda, r1, r2, TIS, NAi, R, step_source, omega_source_qua, step_mask_main, step_mask_SRAF,
-                   omega_mask_qua, maxloop_SMO, threshold, tr, a_source,input_mask);
-       } catch (Exception e) {
-           return ServerResponse.createByErrorMessage(e.getMessage());
-       }
+        if (iDataPersistenceService.storeSmoResult(gdResultSmo) == null) {
+            return ServerResponse.createByErrorMessage("仿真结果存储失败");
+        }
 
-       LOGGER.info("仿真结束");
-       return ServerResponse.createBySuccess();
+        LOGGER.info("存入历史记录...");
+        GDSimulationRecord gdSimulationRecord = new GDSimulationRecord();
+
+        gdSimulationRecord.setUserNo((String) subject.getPrincipal());
+        gdSimulationRecord.setModuleName(Const.Module.MODULE_SMO);
+        gdSimulationRecord.setParametersId(gdParameterSmo.getId());
+        gdSimulationRecord.setResultId(gdResultSmo.getId());
+        gdSimulationRecord.setStartTime(startTime);
+        gdSimulationRecord.setEndTime(endTime);
+
+        if (iDataPersistenceService.storeSimulationRecord(gdSimulationRecord) == null) {
+            return ServerResponse.createByErrorMessage("仿真记录存储失败");
+        }
+
+        return ServerResponse.createBySuccess(gdResultSmo);
     }
 }

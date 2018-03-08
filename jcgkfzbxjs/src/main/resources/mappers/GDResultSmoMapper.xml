@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="bit.gd.pojo.GDResultSmo" >
     <constructor >
       <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="parameters" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="parameters_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="user_no" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="error_mat" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="error_weight_mat" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -19,7 +19,7 @@
     </constructor>
   </resultMap>
   <sql id="Base_Column_List" >
-    id, parameters, user_no, error_mat, error_weight_mat, mask_pattern_mat, print_image_mat, 
+    id, parameters_id, user_no, error_mat, error_weight_mat, mask_pattern_mat, print_image_mat, 
     source_pattern_mat, mask_binary_png, print_image_png, source_pattern_png, error_convergence_png, 
     create_time
   </sql>
@@ -33,13 +33,13 @@
     delete from gd_result_smo
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="bit.gd.pojo.GDResultSmo" >
-    insert into gd_result_smo (id, parameters, user_no, 
+  <insert id="insert" parameterType="bit.gd.pojo.GDResultSmo" useGeneratedKeys="true" keyProperty="id" >
+    insert into gd_result_smo (id, parameters_id, user_no, 
       error_mat, error_weight_mat, mask_pattern_mat, 
       print_image_mat, source_pattern_mat, mask_binary_png, 
       print_image_png, source_pattern_png, error_convergence_png, 
       create_time)
-    values (#{id,jdbcType=INTEGER}, #{parameters,jdbcType=INTEGER}, #{userNo,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=INTEGER}, #{parametersId,jdbcType=INTEGER}, #{userNo,jdbcType=VARCHAR}, 
       #{errorMat,jdbcType=VARCHAR}, #{errorWeightMat,jdbcType=VARCHAR}, #{maskPatternMat,jdbcType=VARCHAR}, 
       #{printImageMat,jdbcType=VARCHAR}, #{sourcePatternMat,jdbcType=VARCHAR}, #{maskBinaryPng,jdbcType=VARCHAR}, 
       #{printImagePng,jdbcType=VARCHAR}, #{sourcePatternPng,jdbcType=VARCHAR}, #{errorConvergencePng,jdbcType=VARCHAR}, 
@@ -51,8 +51,8 @@
       <if test="id != null" >
         id,
       </if>
-      <if test="parameters != null" >
-        parameters,
+      <if test="parametersId != null" >
+        parameters_id,
       </if>
       <if test="userNo != null" >
         user_no,
@@ -92,8 +92,8 @@
       <if test="id != null" >
         #{id,jdbcType=INTEGER},
       </if>
-      <if test="parameters != null" >
-        #{parameters,jdbcType=INTEGER},
+      <if test="parametersId != null" >
+        #{parametersId,jdbcType=INTEGER},
       </if>
       <if test="userNo != null" >
         #{userNo,jdbcType=VARCHAR},
@@ -133,8 +133,8 @@
   <update id="updateByPrimaryKeySelective" parameterType="bit.gd.pojo.GDResultSmo" >
     update gd_result_smo
     <set >
-      <if test="parameters != null" >
-        parameters = #{parameters,jdbcType=INTEGER},
+      <if test="parametersId != null" >
+        parameters_id = #{parametersId,jdbcType=INTEGER},
       </if>
       <if test="userNo != null" >
         user_no = #{userNo,jdbcType=VARCHAR},
@@ -174,7 +174,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="bit.gd.pojo.GDResultSmo" >
     update gd_result_smo
-    set parameters = #{parameters,jdbcType=INTEGER},
+    set parameters_id = #{parametersId,jdbcType=INTEGER},
       user_no = #{userNo,jdbcType=VARCHAR},
       error_mat = #{errorMat,jdbcType=VARCHAR},
       error_weight_mat = #{errorWeightMat,jdbcType=VARCHAR},

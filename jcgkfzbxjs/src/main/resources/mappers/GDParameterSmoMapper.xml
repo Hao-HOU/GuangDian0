@@ -48,7 +48,7 @@
     delete from gd_parameter_smo
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="bit.gd.pojo.GDParameterSmo" >
+  <insert id="insert" parameterType="bit.gd.pojo.GDParameterSmo" useGeneratedKeys="true" keyProperty="id" >
     insert into gd_parameter_smo (id, user_no, mask_dimension, 
       pixel_size, reflect, absorb, 
       shadow_near, shadow_far, wavelength, 

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ConnectMatlabServiceImpl implements IConnectMatlabService {
-    private final Logger LOGGER = LoggerFactory.getLogger(ConnectMatlabServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IConnectMatlabService.class);
 
     public ServerResponse firstTrySMO() {
         double N = 201;//Mask Dimension

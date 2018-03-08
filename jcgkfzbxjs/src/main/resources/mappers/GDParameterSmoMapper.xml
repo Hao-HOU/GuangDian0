@@ -400,7 +400,5 @@
         tr = #{tr,jdbcType=DOUBLE}
         and
         a_source = #{aSource,jdbcType=DOUBLE}
-        and
-        input_mask = #{inputMask,jdbcType=VARCHAR}
     </select>
 </mapper>

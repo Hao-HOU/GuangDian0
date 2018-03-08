@@ -28,7 +28,7 @@ import java.util.Set;
  * @date 2018/2/28 21:54
  */
 public class CustomRealm extends AuthorizingRealm {
-    private Logger LOGGER = LoggerFactory.getLogger(CustomRealm.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomRealm.class);
     //设置realm的名称
     @Override
     public void setName(String name) {

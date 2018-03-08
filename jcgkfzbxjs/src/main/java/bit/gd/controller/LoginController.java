@@ -27,7 +27,7 @@ import java.util.Set;
 @RequestMapping("/api")
 public class LoginController {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
 
     @RequestMapping(value = "login.do", method = RequestMethod.POST)
     @ResponseBody

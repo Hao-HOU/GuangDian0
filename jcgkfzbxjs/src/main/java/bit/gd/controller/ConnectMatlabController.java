@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/api")
 public class ConnectMatlabController {
-    private final Logger LOGGER = LoggerFactory.getLogger(ConnectMatlabController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConnectMatlabController.class);
 
     @Autowired
     IConnectMatlabService iConnectMatlabService;

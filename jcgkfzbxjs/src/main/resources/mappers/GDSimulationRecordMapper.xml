@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="bit.gd.dao.GDSimulationRecordMapper" >
+  <resultMap id="BaseResultMap" type="bit.gd.pojo.GDSimulationRecord" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="user_no" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="module_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="parameters_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="result_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="start_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="end_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_no, module_name, parameters_id, result_id, start_time, end_time, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gd_simulation_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gd_simulation_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="bit.gd.pojo.GDSimulationRecord" >
+    insert into gd_simulation_record (id, user_no, module_name, 
+      parameters_id, result_id, start_time, 
+      end_time, create_time)
+    values (#{id,jdbcType=INTEGER}, #{userNo,jdbcType=VARCHAR}, #{moduleName,jdbcType=VARCHAR}, 
+      #{parametersId,jdbcType=INTEGER}, #{resultId,jdbcType=INTEGER}, #{startTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="bit.gd.pojo.GDSimulationRecord" >
+    insert into gd_simulation_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userNo != null" >
+        user_no,
+      </if>
+      <if test="moduleName != null" >
+        module_name,
+      </if>
+      <if test="parametersId != null" >
+        parameters_id,
+      </if>
+      <if test="resultId != null" >
+        result_id,
+      </if>
+      <if test="startTime != null" >
+        start_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userNo != null" >
+        #{userNo,jdbcType=VARCHAR},
+      </if>
+      <if test="moduleName != null" >
+        #{moduleName,jdbcType=VARCHAR},
+      </if>
+      <if test="parametersId != null" >
+        #{parametersId,jdbcType=INTEGER},
+      </if>
+      <if test="resultId != null" >
+        #{resultId,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="bit.gd.pojo.GDSimulationRecord" >
+    update gd_simulation_record
+    <set >
+      <if test="userNo != null" >
+        user_no = #{userNo,jdbcType=VARCHAR},
+      </if>
+      <if test="moduleName != null" >
+        module_name = #{moduleName,jdbcType=VARCHAR},
+      </if>
+      <if test="parametersId != null" >
+        parameters_id = #{parametersId,jdbcType=INTEGER},
+      </if>
+      <if test="resultId != null" >
+        result_id = #{resultId,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="bit.gd.pojo.GDSimulationRecord" >
+    update gd_simulation_record
+    set user_no = #{userNo,jdbcType=VARCHAR},
+      module_name = #{moduleName,jdbcType=VARCHAR},
+      parameters_id = #{parametersId,jdbcType=INTEGER},
+      result_id = #{resultId,jdbcType=INTEGER},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

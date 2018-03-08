@@ -6,7 +6,7 @@
 
 SpringMVC文件上传
 <form name="upload" action="/api/upload.do" method="post" enctype="multipart/form-data">
-    <input type="file" name="upload_file"/>
+    <input type="file" name="file"/>
     <input type="submit" value="上传">
 </form>
 </body>

@@ -25,7 +25,7 @@ public class FileManageController {
 
     @RequestMapping("upload.do")
     @ResponseBody
-    public ServerResponse upload(@RequestParam(value = "upload_file", required = false) MultipartFile file,
+    public ServerResponse upload(@RequestParam(value = "file", required = false) MultipartFile file,
                                  HttpServletRequest request) {
         //填充业务
         String path = request.getSession().getServletContext().getRealPath("upload");

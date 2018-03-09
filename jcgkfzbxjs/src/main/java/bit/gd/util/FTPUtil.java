@@ -57,6 +57,8 @@ public class FTPUtil {
                 fis.close();
                 ftpClient.disconnect();
             }
+        } else {
+            return false;
         }
         return uploaded;
     }
@@ -66,7 +68,7 @@ public class FTPUtil {
         try {
             ftpClient.connect(ip);
             isSuccess = ftpClient.login(user, pwd);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("连接FTP服务器异常", e);
         }
         return isSuccess;

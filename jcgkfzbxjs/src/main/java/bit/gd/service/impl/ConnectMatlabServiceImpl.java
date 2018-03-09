@@ -7,6 +7,10 @@ import bit.gd.pojo.GDResultSmo;
 import bit.gd.pojo.GDSimulationRecord;
 import bit.gd.service.IConnectMatlabService;
 import bit.gd.service.IDataPersistenceService;
+import bit.gd.service.IFileService;
+import bit.gd.util.PropertiesUtil;
+import com.mathworks.toolbox.javabuilder.MWException;
+import euvsmosyy.SMO;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
@@ -23,26 +27,31 @@ import java.util.Date;
 public class ConnectMatlabServiceImpl implements IConnectMatlabService {
     private static final Logger LOGGER = LoggerFactory.getLogger(IConnectMatlabService.class);
 
+    private static final String matlabOutputPath = PropertiesUtil.getProperty("matlab.output.path");
+
     @Autowired
     IDataPersistenceService iDataPersistenceService;
 
+    @Autowired
+    IFileService iFileService;
+
     public ServerResponse executeSmoSimulation(GDParameterSmo gdParameterSmo) {
         Date startTime = new Date();
-//        SMO smo = null;
-//        try {
-//            smo = new SMO();
-//            smo.EUV_Pixelated_SMO_MAIN(4, gdParameterSmo.getCoreNum(), gdParameterSmo.getMaskDimension(),
-//                    gdParameterSmo.getPixelSize(), gdParameterSmo.getReflect(), gdParameterSmo.getAbsorb(),
-//                    gdParameterSmo.getShadowNear(), gdParameterSmo.getShadowFar(), gdParameterSmo.getWavelength(),
-//                    gdParameterSmo.getSigmaIn(), gdParameterSmo.getSigmaOut(), gdParameterSmo.getTis(),
-//                    gdParameterSmo.getNa(), gdParameterSmo.getRatio(), gdParameterSmo.getStepSource(),
-//                    gdParameterSmo.getOmegaSourceQua(), gdParameterSmo.getStepMaskMain(), gdParameterSmo.getStepMaskSraf(),
-//                    gdParameterSmo.getOmegaMaskQua(), gdParameterSmo.getMaxloopSmo(), gdParameterSmo.getThreshold(),
-//                    gdParameterSmo.getTr(), gdParameterSmo.getaSource(),
-//                    PropertiesUtil.getProperty("ftp.server.path") + gdParameterSmo.getInputMask());
-//        } catch (MWException e) {
-//            return ServerResponse.createByErrorMessage(e.getMessage());
-//        }
+        SMO smo = null;
+        try {
+            smo = new SMO();
+            smo.EUV_Pixelated_SMO_MAIN(4, gdParameterSmo.getCoreNum(), gdParameterSmo.getMaskDimension(),
+                    gdParameterSmo.getPixelSize(), gdParameterSmo.getReflect(), gdParameterSmo.getAbsorb(),
+                    gdParameterSmo.getShadowNear(), gdParameterSmo.getShadowFar(), gdParameterSmo.getWavelength(),
+                    gdParameterSmo.getSigmaIn(), gdParameterSmo.getSigmaOut(), gdParameterSmo.getTis(),
+                    gdParameterSmo.getNa(), gdParameterSmo.getRatio(), gdParameterSmo.getStepSource(),
+                    gdParameterSmo.getOmegaSourceQua(), gdParameterSmo.getStepMaskMain(), gdParameterSmo.getStepMaskSraf(),
+                    gdParameterSmo.getOmegaMaskQua(), gdParameterSmo.getMaxloopSmo(), gdParameterSmo.getThreshold(),
+                    gdParameterSmo.getTr(), gdParameterSmo.getaSource(),
+                    PropertiesUtil.getProperty("ftp.server.path") + gdParameterSmo.getInputMask());
+        } catch (MWException e) {
+            return ServerResponse.createByErrorMessage(e.getMessage());
+        }
 
         try {
             Thread.sleep(10000L);
@@ -57,15 +66,7 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
         GDResultSmo gdResultSmo = new GDResultSmo();
         gdResultSmo.setParametersId(gdParameterSmo.getId());
         gdResultSmo.setUserNo((String) subject.getPrincipal());
-        gdResultSmo.setErrorMat("error.mat");
-        gdResultSmo.setErrorConvergencePng("error_convergence.png");
-        gdResultSmo.setErrorWeightMat("error_weight.mat");
-        gdResultSmo.setMaskBinaryPng("mask_binary.png");
-        gdResultSmo.setMaskPatternMat("mask_pattern.mat");
-        gdResultSmo.setPrintImageMat("print_image.mat");
-        gdResultSmo.setPrintImagePng("print_image.png");
-        gdResultSmo.setSourcePatternMat("source_pattern.mat");
-        gdResultSmo.setSourcePatternPng("source_pattern.png");
+        gdResultSmo = fillGDResultSmoFilepath(gdResultSmo);
 
         if (iDataPersistenceService.storeSmoResult(gdResultSmo) == null) {
             return ServerResponse.createByErrorMessage("仿真结果存储失败");
@@ -86,5 +87,28 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
         }
 
         return ServerResponse.createBySuccess(gdResultSmo);
+    }
+
+    private GDResultSmo fillGDResultSmoFilepath(GDResultSmo gdResultSmo) {
+        gdResultSmo.setErrorMat(iFileService
+                .uploadMatlabOutputFile(Const.SmoMatlabOutputFilename.SMO_Error_Mat, matlabOutputPath));
+        gdResultSmo.setErrorConvergencePng(iFileService
+                .uploadMatlabOutputFile(Const.SmoMatlabOutputFilename.SMO_Error_Convergence_Png, matlabOutputPath));
+        gdResultSmo.setErrorWeightMat(iFileService
+                .uploadMatlabOutputFile(Const.SmoMatlabOutputFilename.SMO_Error_Weight_Mat, matlabOutputPath));
+        gdResultSmo.setMaskBinaryPng(iFileService
+                .uploadMatlabOutputFile(Const.SmoMatlabOutputFilename.SMO_Mask_Binary_Png, matlabOutputPath));
+        gdResultSmo.setMaskPatternMat(iFileService
+                .uploadMatlabOutputFile(Const.SmoMatlabOutputFilename.SMO_Mask_Pattern_Mat, matlabOutputPath));
+        gdResultSmo.setPrintImageMat(iFileService
+                .uploadMatlabOutputFile(Const.SmoMatlabOutputFilename.SMO_Print_Image_Mat, matlabOutputPath));
+        gdResultSmo.setPrintImagePng(iFileService
+                .uploadMatlabOutputFile(Const.SmoMatlabOutputFilename.SMO_Print_Image_Png, matlabOutputPath));
+        gdResultSmo.setSourcePatternMat(iFileService
+                .uploadMatlabOutputFile(Const.SmoMatlabOutputFilename.SMO_Source_Pattern_Mat, matlabOutputPath));
+        gdResultSmo.setSourcePatternPng(iFileService
+                .uploadMatlabOutputFile(Const.SmoMatlabOutputFilename.SMO_Source_Pattern_Png, matlabOutputPath));
+
+        return gdResultSmo;
     }
 }

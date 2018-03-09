@@ -2,6 +2,7 @@ package bit.gd.controller;
 
 import add.Matlab2Java;
 import bit.gd.common.Const;
+import bit.gd.common.ResponseCode;
 import bit.gd.common.ServerResponse;
 import bit.gd.pojo.GDParameterSmo;
 import bit.gd.service.IConnectMatlabService;
@@ -45,7 +46,8 @@ public class ConnectMatlabController {
         if (subject.hasRole(Const.Role.ROLE_ADMIN) || subject.hasRole(Const.Role.ROLE_SMO)) {
             gdParameterSmo.setUserNo((String) subject.getPrincipal());
             if (iDataPersistenceService.checkSmoParametersSimulated(gdParameterSmo) != null) {
-                return ServerResponse.createByErrorMessage("该组参数已仿真过，可直接查看");
+                return ServerResponse.createByErrorCodeMessage(ResponseCode.SIMULATED.getCode(),
+                        "参数已仿真过");
             }
             if (iDataPersistenceService.storeSmoParameters(gdParameterSmo) != null) {
                 LOGGER.info("用户[{}]运行SMO模块所用参数存储成功，仿真开始...", subject.getPrincipal());

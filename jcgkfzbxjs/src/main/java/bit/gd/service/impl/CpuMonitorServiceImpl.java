@@ -3,6 +3,7 @@ package bit.gd.service.impl;
 import bit.gd.common.ServerResponse;
 import bit.gd.service.ICpuMonitorService;
 import bit.gd.vo.CpuInfoVo;
+import bit.gd.vo.CpuInfoWithTimeStamp;
 import org.hyperic.sigar.CpuInfo;
 import org.hyperic.sigar.CpuPerc;
 import org.hyperic.sigar.Sigar;
@@ -33,7 +34,11 @@ public class CpuMonitorServiceImpl implements ICpuMonitorService {
             return ServerResponse.createByErrorMessage("获取CPU使用情况失败");
         }
 
-        return ServerResponse.createBySuccess(cpuInfoVoList);
+        CpuInfoWithTimeStamp cpuInfoWithTimeStamp = new CpuInfoWithTimeStamp();
+        cpuInfoWithTimeStamp.setCpuInfoVoList(cpuInfoVoList);
+        cpuInfoWithTimeStamp.setTimeStamp(System.currentTimeMillis());
+
+        return ServerResponse.createBySuccess(cpuInfoWithTimeStamp);
     }
     private CpuInfoVo getCpuPerc(CpuPerc cpu, int id) {
         CpuInfoVo cpuInfoVo = new CpuInfoVo();

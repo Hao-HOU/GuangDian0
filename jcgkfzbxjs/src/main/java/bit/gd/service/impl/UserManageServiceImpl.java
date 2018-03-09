@@ -9,6 +9,7 @@ import bit.gd.pojo.GDRUserRole;
 import bit.gd.pojo.GDRole;
 import bit.gd.pojo.GDUser;
 import bit.gd.service.IUserManageService;
+import bit.gd.util.PropertiesUtil;
 import bit.gd.vo.UserVo;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -49,7 +50,9 @@ public class UserManageServiceImpl implements IUserManageService {
     }
 
     public UserVo getCurrentUserInfo(String userNo) {
-        return assembleUserVo(gdUserMapper.selectByUserNo(userNo));
+        UserVo userVo = assembleUserVo(gdUserMapper.selectByUserNo(userNo));
+        userVo.setFtpServerAddress(PropertiesUtil.getProperty("ftp.server.http.prefix"));
+        return userVo;
     }
 
     public String getCurrentUserPassword(String userNo) {

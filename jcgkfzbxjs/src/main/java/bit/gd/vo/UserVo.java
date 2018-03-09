@@ -14,6 +14,7 @@ public class UserVo {
     private String name;
     private String phone;
     private Set<String> roles;
+    private String ftpServerAddress;
 
     public int getId() {
         return id;
@@ -53,5 +54,13 @@ public class UserVo {
 
     public void setRoles(Set<String> roles) {
         this.roles = roles;
+    }
+
+    public String getFtpServerAddress() {
+        return ftpServerAddress;
+    }
+
+    public void setFtpServerAddress(String ftpServerAddress) {
+        this.ftpServerAddress = ftpServerAddress;
     }
 }

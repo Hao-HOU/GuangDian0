@@ -3,7 +3,9 @@ package bit.gd.service.impl;
 import bit.gd.common.Const;
 import bit.gd.service.IFileService;
 import bit.gd.util.FTPUtil;
+import bit.gd.util.FileMD5Util;
 import bit.gd.util.PropertiesUtil;
+import bit.gd.vo.FilenameAndHashVo;
 import com.google.common.collect.Lists;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -14,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
 
 /**
@@ -23,7 +26,8 @@ import java.util.UUID;
 public class FileServiceImpl implements IFileService {
     private static final Logger LOGGER = LoggerFactory.getLogger(IFileService.class);
 
-    public String upload(MultipartFile file, String path) {
+    public FilenameAndHashVo upload(MultipartFile file, String path) {
+        FilenameAndHashVo filenameAndHashVo = new FilenameAndHashVo();
         String fileName = file.getOriginalFilename();
 
         //获取文件扩展名
@@ -44,7 +48,7 @@ public class FileServiceImpl implements IFileService {
             //文件已经上传成功
 
             //将targetFile上传到我们的FTP服务器上
-            FTPUtil.uploadFile(Lists.newArrayList(targetFile));
+            FTPUtil.uploadFile(Lists.newArrayList(targetFile), Const.UPLOAD_FILE_PATH);
             //已经上传到FTP服务器上
 
             //上传完之后，删除upload下面的文件
@@ -55,16 +59,30 @@ public class FileServiceImpl implements IFileService {
             return null;
         }
 
-        return targetFile.getName();
+        //计算上传文件Hash值
+        try {
+            InputStream inputStream = FTPUtil.getFile(Const.UPLOAD_FILE_PATH, targetFile.getName());
+            if (inputStream == null) {
+                LOGGER.info("文件Hash值计算失败");
+            } else {
+                filenameAndHashVo.setFileHash(FileMD5Util.getMD5Checksum(inputStream));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        filenameAndHashVo.setTargetFileName(targetFile.getName());
+
+        return filenameAndHashVo;
     }
 
 
-    public String uploadMatlabOutputFile(String matlabOutputFilename, String matlabOutputPath) {
+    public String uploadMatlabOutputFile(String matlabOutputFilename, String matlabOutputPath, String ftpResultPath) {
         File file = new File(matlabOutputPath + matlabOutputFilename);
         File rename = new File(matlabOutputPath + UUID.randomUUID().toString() + "-" + file.getName());
         if (file.renameTo(rename)) {
             try {
-                FTPUtil.uploadFile(Lists.newArrayList(rename));
+                FTPUtil.uploadFile(Lists.newArrayList(rename), ftpResultPath);
                 String newFilename =  rename.getName();
                 rename.delete();
                 return newFilename;

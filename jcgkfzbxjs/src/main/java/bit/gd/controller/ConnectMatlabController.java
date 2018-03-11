@@ -7,6 +7,7 @@ import bit.gd.common.ServerResponse;
 import bit.gd.pojo.GDParameterSmo;
 import bit.gd.service.IConnectMatlabService;
 import bit.gd.service.IDataPersistenceService;
+import bit.gd.vo.SimulatedVo;
 import com.mathworks.toolbox.javabuilder.MWException;
 import com.mathworks.toolbox.javabuilder.MWNumericArray;
 import matlabcontrol.MatlabConnectionException;
@@ -46,8 +47,13 @@ public class ConnectMatlabController {
         if (subject.hasRole(Const.Role.ROLE_ADMIN) || subject.hasRole(Const.Role.ROLE_SMO)) {
             gdParameterSmo.setUserNo((String) subject.getPrincipal());
             if (iDataPersistenceService.checkSmoParametersSimulated(gdParameterSmo) != null) {
-                return ServerResponse.createByErrorCodeMessage(ResponseCode.SIMULATED.getCode(),
-                        "参数已仿真过");
+                SimulatedVo simulatedVo = iDataPersistenceService.getSimulatedVo(Const.Module.MODULE_SMO,
+                        iDataPersistenceService.checkSmoParametersSimulated(gdParameterSmo).getId());
+                if (simulatedVo == null) {
+                    return ServerResponse.createByErrorMessage("获取相同参数的历史仿真结果失败");
+                }
+                return ServerResponse.createBySimulated(ResponseCode.SIMULATED.getCode(),
+                        "参数已仿真过", simulatedVo);
             }
             if (iDataPersistenceService.storeSmoParameters(gdParameterSmo) != null) {
                 LOGGER.info("用户[{}]运行SMO模块所用参数存储成功，仿真开始...", subject.getPrincipal());

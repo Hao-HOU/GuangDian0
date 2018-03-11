@@ -53,11 +53,13 @@ public class GDParameterSmo {
 
     private String inputMask;
 
+    private String inputMaskHash;
+
     private Date createTime;
 
     private Date updateTime;
 
-    public GDParameterSmo(Integer id, String userNo, Double maskDimension, Double pixelSize, Double reflect, Double absorb, Double shadowNear, Double shadowFar, Double wavelength, Double sigmaIn, Double sigmaOut, Double tis, Double na, Double ratio, Double stepSource, Double omegaSourceQua, Double stepMaskMain, Double stepMaskSraf, Double omegaMaskQua, Double maxloopSmo, Double threshold, Double tr, Double aSource, Double coreNum, String inputMask, Date createTime, Date updateTime) {
+    public GDParameterSmo(Integer id, String userNo, Double maskDimension, Double pixelSize, Double reflect, Double absorb, Double shadowNear, Double shadowFar, Double wavelength, Double sigmaIn, Double sigmaOut, Double tis, Double na, Double ratio, Double stepSource, Double omegaSourceQua, Double stepMaskMain, Double stepMaskSraf, Double omegaMaskQua, Double maxloopSmo, Double threshold, Double tr, Double aSource, Double coreNum, String inputMask, String inputMaskHash, Date createTime, Date updateTime) {
         this.id = id;
         this.userNo = userNo;
         this.maskDimension = maskDimension;
@@ -83,6 +85,7 @@ public class GDParameterSmo {
         this.aSource = aSource;
         this.coreNum = coreNum;
         this.inputMask = inputMask;
+        this.inputMaskHash = inputMaskHash;
         this.createTime = createTime;
         this.updateTime = updateTime;
     }
@@ -289,6 +292,14 @@ public class GDParameterSmo {
 
     public void setInputMask(String inputMask) {
         this.inputMask = inputMask == null ? null : inputMask.trim();
+    }
+
+    public String getInputMaskHash() {
+        return inputMaskHash;
+    }
+
+    public void setInputMaskHash(String inputMaskHash) {
+        this.inputMaskHash = inputMaskHash == null ? null : inputMaskHash.trim();
     }
 
     public Date getCreateTime() {

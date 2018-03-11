@@ -69,7 +69,7 @@
         </javaClientGenerator>
 
 
-        <table tableName="gd_result_smo" domainObjectName="GDResultSmo" enableCountByExample="false" enableUpdateByExample="false"
+        <table tableName="gd_parameter_smo" domainObjectName="GDParameterSmo" enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
 
     </context>

@@ -7,6 +7,7 @@ import bit.gd.pojo.GDParameterSmo;
 import bit.gd.pojo.GDResultSmo;
 import bit.gd.pojo.GDSimulationRecord;
 import bit.gd.service.IDataPersistenceService;
+import bit.gd.vo.SimulatedVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,5 +49,20 @@ public class DataPersistenceServiceImpl implements IDataPersistenceService {
         }
 
         return null;
+    }
+
+    public SimulatedVo getSimulatedVo(String moduleName, int parametersId) {
+        SimulatedVo simulatedVo = new SimulatedVo();
+        simulatedVo.setParametersId(parametersId);
+
+        GDSimulationRecord gdSimulationRecord = gdSimulationRecordMapper.selectByModuleNameAndParametersId(moduleName, parametersId);
+        if (gdSimulationRecord != null) {
+            simulatedVo.setResultId(gdSimulationRecord.getResultId());
+        } else {
+            return null;
+        }
+
+
+        return simulatedVo;
     }
 }

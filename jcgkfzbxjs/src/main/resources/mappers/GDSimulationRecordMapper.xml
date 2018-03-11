@@ -128,19 +128,55 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
-  <select id="selectAllSimulationRecords" resultMap="BaseResultMap" >
+  <select id="selectAllSimulationRecords" resultMap="BaseResultMap"  parameterType="bit.gd.vo.SearchSimulationRecordsRequest">
     select
     <include refid="Base_Column_List" />
     from gd_simulation_record
+      where 1 = 1
+      <if test="startDay != null and startDay != ''" >
+          and start_time &gt; #{startDay,jdbcType=VARCHAR}
+      </if>
+      <if test="endDay != null and endDay != ''" >
+          and start_time &lt; #{endDay,jdbcType=VARCHAR}
+      </if>
+      <if test="moduleName != null and moduleName != ''" >
+          and module_name = #{moduleName,jdbcType=VARCHAR}
+      </if>
+      <if test="userNo != null and userNo != ''" >
+          and user_no = #{userNo,jdbcType=VARCHAR}
+      </if>
   </select>
 
   <select id="selectAuthorizedModulesSimulationRecords" resultMap="BaseResultMap" >
     select
     <include refid="Base_Column_List" />
     from gd_simulation_record
-    where module_name in
-    <foreach collection="list" open="(" close=")" separator="," item="moduleName" index="i">
-      #{moduleName}
+    where 1 = 1
+      <if test="startDay != null and startDay != ''" >
+          and start_time &gt; #{startDay,jdbcType=VARCHAR}
+      </if>
+      <if test="endDay != null and endDay != ''" >
+          and start_time &lt; #{endDay,jdbcType=VARCHAR}
+      </if>
+      <if test="moduleName != null and moduleName != ''" >
+          and module_name = #{moduleName,jdbcType=VARCHAR}
+      </if>
+      <if test="userNo != null and userNo != ''" >
+          and user_no = #{userNo,jdbcType=VARCHAR}
+      </if>
+      and module_name in
+    <foreach collection="roles" open="(" close=")" separator="," item="module" index="i">
+      #{module}
     </foreach>
+  </select>
+
+  <select id="selectByModuleNameAndParametersId" resultMap="BaseResultMap"  >
+  select
+      <include refid="Base_Column_List" />
+  from gd_simulation_record
+  where
+    module_name = #{moduleName,jdbcType=VARCHAR}
+  and
+    parameters_id = #{parametersId,jdbcType=INTEGER}
   </select>
 </mapper>

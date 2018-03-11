@@ -7,17 +7,25 @@ import bit.gd.dao.GDResultSmoMapper;
 import bit.gd.dao.GDSimulationRecordMapper;
 import bit.gd.dao.GDUserMapper;
 import bit.gd.pojo.GDParameterSmo;
+import bit.gd.pojo.GDResultSmo;
 import bit.gd.pojo.GDSimulationRecord;
 import bit.gd.pojo.GDUser;
 import bit.gd.service.ISimulationRecordService;
+import bit.gd.util.FTPUtil;
+import bit.gd.util.JMatIOUtil;
+import bit.gd.util.PropertiesUtil;
 import bit.gd.vo.RecordDetailRequest;
+import bit.gd.vo.SearchSimulationRecordsRequest;
 import bit.gd.vo.SimulationRecordShowVo;
 import bit.gd.vo.SmoSimulationRecordDetailVo;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,10 +47,10 @@ public class SimulationRecordServiceImpl implements ISimulationRecordService{
     @Autowired
     GDResultSmoMapper gdResultSmoMapper;
 
-    public ServerResponse<PageInfo> getAllSimulationRecords(int pageNum, int pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
+    public ServerResponse<PageInfo> getAllSimulationRecords(SearchSimulationRecordsRequest searchSimulationRecordsRequest) {
+        PageHelper.startPage(searchSimulationRecordsRequest.getPageNum(), searchSimulationRecordsRequest.getPageSize());
 
-        List<GDSimulationRecord> gdSimulationRecordList = gdSimulationRecordMapper.selectAllSimulationRecords();
+        List<GDSimulationRecord> gdSimulationRecordList = gdSimulationRecordMapper.selectAllSimulationRecords(searchSimulationRecordsRequest);
         List<SimulationRecordShowVo> simulationRecordShowVoList = new ArrayList<>();
         for (GDSimulationRecord gdSimulationRecord : gdSimulationRecordList) {
             SimulationRecordShowVo simulationRecordShowVo = assembleSimulationRecordShowVo(gdSimulationRecord);
@@ -55,12 +63,11 @@ public class SimulationRecordServiceImpl implements ISimulationRecordService{
         return ServerResponse.createBySuccess(pageInfo);
     }
 
-    public ServerResponse<PageInfo> getAuthorizedModulesSimulationRecords(int pageNum, int pageSize,
-                                                                          List<String> roles) {
-        PageHelper.startPage(pageNum, pageSize);
+    public ServerResponse<PageInfo> getAuthorizedModulesSimulationRecords(SearchSimulationRecordsRequest searchSimulationRecordsRequest) {
+        PageHelper.startPage(searchSimulationRecordsRequest.getPageNum(), searchSimulationRecordsRequest.getPageSize());
 
         List<GDSimulationRecord> gdSimulationRecordList =
-                gdSimulationRecordMapper.selectAuthorizedModulesSimulationRecords(roles);
+                gdSimulationRecordMapper.selectAuthorizedModulesSimulationRecords(searchSimulationRecordsRequest);
         List<SimulationRecordShowVo> simulationRecordShowVoList = new ArrayList<>();
         for (GDSimulationRecord gdSimulationRecord : gdSimulationRecordList) {
             SimulationRecordShowVo simulationRecordShowVo = assembleSimulationRecordShowVo(gdSimulationRecord);
@@ -96,27 +103,7 @@ public class SimulationRecordServiceImpl implements ISimulationRecordService{
         return simulationRecordShowVo;
     }
 
-    public ServerResponse getSimulationRecordParameters(int parametersId, String moduleName) {
-        switch (moduleName) {
-            case Const.Module.MODULE_SMO:
-                return ServerResponse.createBySuccess(getSmoSimulationRecordParameters(parametersId));
-            case Const.Module.MODULE_OPC:
-                return ServerResponse.createBySuccessMessage("OPC模块暂未实现");
-            case Const.Module.MODULE_PDOD:
-                return ServerResponse.createBySuccessMessage("PDOD模块暂未实现");
-            case Const.Module.MODULE_SMPWO:
-                return ServerResponse.createBySuccessMessage("SMPWO模块暂未实现");
-            default:
-                return ServerResponse.createByErrorMessage("模块名字错误");
-        }
-
-    }
-
-    private GDParameterSmo getSmoSimulationRecordParameters(int parametersId) {
-        return gdParameterSmoMapper.selectByPrimaryKey(parametersId);
-    }
-
-    public ServerResponse getSimulationRecordDetail(RecordDetailRequest recordDetailRequest) {
+    public ServerResponse getSimulationRecordDetail(RecordDetailRequest recordDetailRequest) throws IOException {
         switch (recordDetailRequest.getModuleName()) {
             case Const.Module.MODULE_SMO:
                 return ServerResponse.createBySuccess(getSmoSimulationRecordDetail(recordDetailRequest.getParametersId(),
@@ -133,10 +120,35 @@ public class SimulationRecordServiceImpl implements ISimulationRecordService{
 
     }
 
-    private SmoSimulationRecordDetailVo getSmoSimulationRecordDetail(int parametersId, int resultId) {
+    private SmoSimulationRecordDetailVo getSmoSimulationRecordDetail(int parametersId, int resultId) throws IOException {
         SmoSimulationRecordDetailVo smoSimulationRecordDetailVo = new SmoSimulationRecordDetailVo();
-        smoSimulationRecordDetailVo.setGdParameterSmo(gdParameterSmoMapper.selectByPrimaryKey(parametersId));
-        smoSimulationRecordDetailVo.setGdResultSmo(gdResultSmoMapper.selectByPrimaryKey(resultId));
+        
+        String uploadPath = System.getProperty("bit.gd") + File.separator + Const.UPLOAD_FILE_PATH;
+
+        GDParameterSmo gdParameterSmo = gdParameterSmoMapper.selectByPrimaryKey(parametersId);
+        FTPUtil.moveFile(Const.UPLOAD_FILE_PATH, gdParameterSmo.getInputMask(), uploadPath);
+        smoSimulationRecordDetailVo.setGdParameterSmo(gdParameterSmo);
+
+        String smoResultPath = System.getProperty("bit.gd") + File.separator + Const.RESULT_PATH_SMO;
+        
+        GDResultSmo gdResultSmo = gdResultSmoMapper.selectByPrimaryKey(resultId);
+        FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getErrorMat(), smoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getErrorWeightMat(), smoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getMaskPatternMat(), smoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getPrintImageMat(), smoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getSourcePatternMat(), smoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getMaskBinaryPng(), smoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getPrintImagePng(), smoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getSourcePatternPng(), smoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getErrorConvergencePng(), smoResultPath);
+
+        String errorMatPath = smoResultPath + File.separator + gdResultSmo.getErrorMat();
+        smoSimulationRecordDetailVo.setError(JMatIOUtil.getErrorMatValue(errorMatPath));
+
+        smoSimulationRecordDetailVo.setGdResultSmo(gdResultSmo);
+
+
+        smoSimulationRecordDetailVo.setIp(PropertiesUtil.getProperty("tomcat.ip"));
 
         return smoSimulationRecordDetailVo;
     }

@@ -10,6 +10,11 @@ public class Const {
     public static final String INITIAL_PASSWORD = "123456";
     public static final String USERNAME = "username";
 
+    public static final String LAST_SECOND = " 23:59:59";
+
+    public static final String UPLOAD_FILE_PATH = "upload";
+    public static final String RESULT_PATH_SMO = "smo";
+
     public interface Role {
         String ROLE_USER = "student";//普通用户
         String ROLE_ADMIN = "admin";//管理员

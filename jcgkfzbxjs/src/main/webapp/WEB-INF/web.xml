@@ -49,6 +49,14 @@
             classpath:applicationContext-shiro.xml
         </param-value>
     </context-param>
+    
+    <context-param>
+        <param-name>webAppRootKey</param-name>
+        <param-value>bit.gd</param-value>
+    </context-param>
+    <listener>
+        <listener-class>org.springframework.web.util.WebAppRootListener</listener-class>
+    </listener>
 
     <servlet>
         <servlet-name>dispatcher</servlet-name>

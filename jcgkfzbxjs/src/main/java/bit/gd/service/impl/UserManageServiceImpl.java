@@ -51,7 +51,6 @@ public class UserManageServiceImpl implements IUserManageService {
 
     public UserVo getCurrentUserInfo(String userNo) {
         UserVo userVo = assembleUserVo(gdUserMapper.selectByUserNo(userNo));
-        userVo.setFtpServerAddress(PropertiesUtil.getProperty("ftp.server.http.prefix"));
         return userVo;
     }
 

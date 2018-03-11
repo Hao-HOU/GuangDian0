@@ -28,15 +28,16 @@
       <arg column="a_source" jdbcType="DOUBLE" javaType="java.lang.Double" />
       <arg column="core_num" jdbcType="DOUBLE" javaType="java.lang.Double" />
       <arg column="input_mask" jdbcType="VARCHAR" javaType="java.lang.String" />
-      <arg column="create_time" jdbcType="DATE" javaType="java.util.Date" />
-      <arg column="update_time" jdbcType="DATE" javaType="java.util.Date" />
+      <arg column="input_mask_hash" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="update_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
     </constructor>
   </resultMap>
   <sql id="Base_Column_List" >
     id, user_no, mask_dimension, pixel_size, reflect, absorb, shadow_near, shadow_far, 
     wavelength, sigma_in, sigma_out, tis, na, ratio, step_source, omega_source_qua, step_mask_main, 
     step_mask_sraf, omega_mask_qua, maxloop_smo, threshold, tr, a_source, core_num, input_mask, 
-    create_time, update_time
+    input_mask_hash, create_time, update_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -57,8 +58,8 @@
       omega_source_qua, step_mask_main, step_mask_sraf, 
       omega_mask_qua, maxloop_smo, threshold, 
       tr, a_source, core_num, 
-      input_mask, create_time, update_time
-      )
+      input_mask, input_mask_hash, create_time, 
+      update_time)
     values (#{id,jdbcType=INTEGER}, #{userNo,jdbcType=VARCHAR}, #{maskDimension,jdbcType=DOUBLE}, 
       #{pixelSize,jdbcType=DOUBLE}, #{reflect,jdbcType=DOUBLE}, #{absorb,jdbcType=DOUBLE}, 
       #{shadowNear,jdbcType=DOUBLE}, #{shadowFar,jdbcType=DOUBLE}, #{wavelength,jdbcType=DOUBLE}, 
@@ -67,8 +68,8 @@
       #{omegaSourceQua,jdbcType=DOUBLE}, #{stepMaskMain,jdbcType=DOUBLE}, #{stepMaskSraf,jdbcType=DOUBLE}, 
       #{omegaMaskQua,jdbcType=DOUBLE}, #{maxloopSmo,jdbcType=DOUBLE}, #{threshold,jdbcType=DOUBLE}, 
       #{tr,jdbcType=DOUBLE}, #{aSource,jdbcType=DOUBLE}, #{coreNum,jdbcType=DOUBLE}, 
-      #{inputMask,jdbcType=VARCHAR}, now(), now()
-      )
+      #{inputMask,jdbcType=VARCHAR}, #{inputMaskHash,jdbcType=VARCHAR}, now(),
+      now())
   </insert>
   <insert id="insertSelective" parameterType="bit.gd.pojo.GDParameterSmo" >
     insert into gd_parameter_smo
@@ -147,6 +148,9 @@
       </if>
       <if test="inputMask != null" >
         input_mask,
+      </if>
+      <if test="inputMaskHash != null" >
+        input_mask_hash,
       </if>
       <if test="createTime != null" >
         create_time,
@@ -231,11 +235,14 @@
       <if test="inputMask != null" >
         #{inputMask,jdbcType=VARCHAR},
       </if>
+      <if test="inputMaskHash != null" >
+        #{inputMaskHash,jdbcType=VARCHAR},
+      </if>
       <if test="createTime != null" >
-        #{createTime,jdbcType=DATE},
+        #{createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="updateTime != null" >
-        #{updateTime,jdbcType=DATE},
+        #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -314,11 +321,14 @@
       <if test="inputMask != null" >
         input_mask = #{inputMask,jdbcType=VARCHAR},
       </if>
+      <if test="inputMaskHash != null" >
+        input_mask_hash = #{inputMaskHash,jdbcType=VARCHAR},
+      </if>
       <if test="createTime != null" >
-        create_time = #{createTime,jdbcType=DATE},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="updateTime != null" >
-        update_time = #{updateTime,jdbcType=DATE},
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
@@ -349,56 +359,59 @@
       a_source = #{aSource,jdbcType=DOUBLE},
       core_num = #{coreNum,jdbcType=DOUBLE},
       input_mask = #{inputMask,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=DATE},
-      update_time = #{updateTime,jdbcType=DATE}
+      input_mask_hash = #{inputMaskHash,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 
-    <select id="selectIdByRecord" resultMap="BaseResultMap"  parameterType="bit.gd.pojo.GDParameterSmo" >
-        select
-      <include refid="Base_Column_List" />
-        from gd_parameter_smo
-        where
-        mask_dimension = #{maskDimension,jdbcType=DOUBLE}
-        and
-        pixel_size = #{pixelSize,jdbcType=DOUBLE}
-        and
-        reflect = #{reflect,jdbcType=DOUBLE}
-        and
-        absorb = #{absorb,jdbcType=DOUBLE}
-        and
-        shadow_near = #{shadowNear,jdbcType=DOUBLE}
-        and
-        shadow_far = #{shadowFar,jdbcType=DOUBLE}
-        and
-        wavelength = #{wavelength,jdbcType=DOUBLE}
-        and
-        sigma_in = #{sigmaIn,jdbcType=DOUBLE}
-        and
-        sigma_out = #{sigmaOut,jdbcType=DOUBLE}
-        and
-        tis = #{tis,jdbcType=DOUBLE}
-        and
-        na = #{na,jdbcType=DOUBLE}
-        and
-        ratio = #{ratio,jdbcType=DOUBLE}
-        and
-        step_source = #{stepSource,jdbcType=DOUBLE}
-        and
-        omega_source_qua = #{omegaSourceQua,jdbcType=DOUBLE}
-        and
-        step_mask_main = #{stepMaskMain,jdbcType=DOUBLE}
-        and
-        step_mask_sraf = #{stepMaskSraf,jdbcType=DOUBLE}
-        and
-        omega_mask_qua = #{omegaMaskQua,jdbcType=DOUBLE}
-        and
-        maxloop_smo = #{maxloopSmo,jdbcType=DOUBLE}
-        and
-        threshold = #{threshold,jdbcType=DOUBLE}
-        and
-        tr = #{tr,jdbcType=DOUBLE}
-        and
-        a_source = #{aSource,jdbcType=DOUBLE}
-    </select>
+  <select id="selectIdByRecord" resultMap="BaseResultMap"  parameterType="bit.gd.pojo.GDParameterSmo" >
+    select
+    <include refid="Base_Column_List" />
+    from gd_parameter_smo
+    where
+    input_mask_hash = #{inputMaskHash,jdbcType=VARCHAR}
+    and
+    mask_dimension = #{maskDimension,jdbcType=DOUBLE}
+    and
+    pixel_size = #{pixelSize,jdbcType=DOUBLE}
+    and
+    reflect = #{reflect,jdbcType=DOUBLE}
+    and
+    absorb = #{absorb,jdbcType=DOUBLE}
+    and
+    shadow_near = #{shadowNear,jdbcType=DOUBLE}
+    and
+    shadow_far = #{shadowFar,jdbcType=DOUBLE}
+    and
+    wavelength = #{wavelength,jdbcType=DOUBLE}
+    and
+    sigma_in = #{sigmaIn,jdbcType=DOUBLE}
+    and
+    sigma_out = #{sigmaOut,jdbcType=DOUBLE}
+    and
+    tis = #{tis,jdbcType=DOUBLE}
+    and
+    na = #{na,jdbcType=DOUBLE}
+    and
+    ratio = #{ratio,jdbcType=DOUBLE}
+    and
+    step_source = #{stepSource,jdbcType=DOUBLE}
+    and
+    omega_source_qua = #{omegaSourceQua,jdbcType=DOUBLE}
+    and
+    step_mask_main = #{stepMaskMain,jdbcType=DOUBLE}
+    and
+    step_mask_sraf = #{stepMaskSraf,jdbcType=DOUBLE}
+    and
+    omega_mask_qua = #{omegaMaskQua,jdbcType=DOUBLE}
+    and
+    maxloop_smo = #{maxloopSmo,jdbcType=DOUBLE}
+    and
+    threshold = #{threshold,jdbcType=DOUBLE}
+    and
+    tr = #{tr,jdbcType=DOUBLE}
+    and
+    a_source = #{aSource,jdbcType=DOUBLE}
+  </select>
 </mapper>

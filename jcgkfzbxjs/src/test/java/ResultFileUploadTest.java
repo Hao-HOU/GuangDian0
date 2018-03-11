@@ -24,15 +24,15 @@ public class ResultFileUploadTest {
 
     @Test
     public void uploadResultFile() {
-        String path = PropertiesUtil.getProperty("matlab.output.path");
+        String path = "E:\\ztest\\SMO_result\\";
         File file = new File(path + Const.SmoMatlabOutputFilename.SMO_Error_Convergence_Png);
         File rename = new File(path + UUID.randomUUID().toString() + "-" + file.getName());
         if (file.renameTo(rename)) {
             System.out.println("文件名修改成功");
             System.out.println("新文件名：" + rename.getName());
             try {
-                FTPUtil.uploadFile(Lists.newArrayList(rename));
-                rename.delete();
+                FTPUtil.uploadFile(Lists.newArrayList(rename), Const.RESULT_PATH_SMO);
+//                rename.delete();
             } catch (IOException e) {
                 e.printStackTrace();
             }

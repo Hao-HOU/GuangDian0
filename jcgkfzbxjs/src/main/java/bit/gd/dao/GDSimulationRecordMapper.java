@@ -1,6 +1,8 @@
 package bit.gd.dao;
 
 import bit.gd.pojo.GDSimulationRecord;
+import bit.gd.vo.SearchSimulationRecordsRequest;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -17,7 +19,10 @@ public interface GDSimulationRecordMapper {
 
     int updateByPrimaryKey(GDSimulationRecord record);
 
-    List<GDSimulationRecord> selectAllSimulationRecords();
+    List<GDSimulationRecord> selectAllSimulationRecords(SearchSimulationRecordsRequest searchSimulationRecordsRequest);
 
-    List<GDSimulationRecord> selectAuthorizedModulesSimulationRecords(List<String> roles);
+    List<GDSimulationRecord> selectAuthorizedModulesSimulationRecords(SearchSimulationRecordsRequest searchSimulationRecordsRequest);
+
+    GDSimulationRecord selectByModuleNameAndParametersId(@Param("moduleName") String moduleName,
+                                              @Param("parametersId") int parametersId);
 }

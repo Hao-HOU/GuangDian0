@@ -9,6 +9,24 @@ import bit.gd.pojo.GDResultSmo;
 public class SmoSimulationRecordDetailVo {
     private GDParameterSmo gdParameterSmo;
     private GDResultSmo gdResultSmo;
+    private String ip;
+    private double error;
+
+    public double getError() {
+        return error;
+    }
+
+    public void setError(double error) {
+        this.error = error;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
 
     public GDParameterSmo getGdParameterSmo() {
         return gdParameterSmo;

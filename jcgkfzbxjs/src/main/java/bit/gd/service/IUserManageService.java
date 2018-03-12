@@ -2,6 +2,7 @@ package bit.gd.service;
 
 import bit.gd.common.ServerResponse;
 import bit.gd.pojo.GDRole;
+import bit.gd.pojo.GDRunningState;
 import bit.gd.pojo.GDUser;
 import bit.gd.vo.UserVo;
 import com.github.pagehelper.PageInfo;
@@ -46,4 +47,8 @@ public interface IUserManageService {
     GDRole getRole(String roleName);
 
     int changeTheRoleOfTheUser(int userId, String roleName, String adminName);
+
+    boolean initializeRunningState(String userNo, String adminName);
+
+    GDRunningState getUserModuleRunningState(String userNo, String moduleName);
 }

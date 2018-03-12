@@ -14,6 +14,7 @@ public class Const {
 
     public static final String UPLOAD_FILE_PATH = "upload";
     public static final String RESULT_PATH_SMO = "smo";
+    public static final String INTER_FILE_PATH = "inter";
 
     public interface Role {
         String ROLE_USER = "student";//普通用户
@@ -46,6 +47,11 @@ public class Const {
     public interface Status {
         int ACTIVE = 0;//账号可用
         int FROZEN = 1;//账号不可用
+    }
+
+    public interface RunningState {
+        int IDLE = 0;//该用户该模块暂无任务执行
+        int RUNNING = 1;//该用户正在使用该模块
     }
 
 }

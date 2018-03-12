@@ -80,7 +80,7 @@ public class ServerResponse<T> implements Serializable {
         return new ServerResponse<T>(errorCode, errorMessage);
     }
 
-    public static <T> ServerResponse<T> createBySimulated(int simulatedCode, String msg, T data) {
-        return new ServerResponse<T>(simulatedCode, msg, data);
+    public static <T> ServerResponse<T> createBySuccessCodeMessage(int successCode, String msg, T data) {
+        return new ServerResponse<T>(successCode, msg, data);
     }
 }

@@ -1,10 +1,12 @@
 package bit.gd.service.impl;
 
 import bit.gd.common.Const;
+import bit.gd.common.ResponseCode;
 import bit.gd.common.ServerResponse;
 import bit.gd.common.SmoSingleton;
 import bit.gd.dao.GDParameterSmoMapper;
 import bit.gd.dao.GDResultSmoMapper;
+import bit.gd.dao.GDRunningStateMapper;
 import bit.gd.pojo.GDParameterSmo;
 import bit.gd.pojo.GDResultSmo;
 import bit.gd.pojo.GDSimulationRecord;
@@ -45,12 +47,45 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
     @Autowired
     GDResultSmoMapper gdResultSmoMapper;
 
+    @Autowired
+    GDRunningStateMapper gdRunningStateMapper;
+
     public ServerResponse executeSmoSimulation(GDParameterSmo gdParameterSmo) {
+        Subject subject = SecurityUtils.getSubject();
+        String userNo = (String) subject.getPrincipal();
+        gdRunningStateMapper.updateByUserNoAndModuleName(userNo, Const.Module.MODULE_SMO, Const.RunningState.RUNNING);
+
         Date startTime = new Date();
 
-        if (!SmoSingleton.INSTANCE.singletonExecuteSMO(gdParameterSmo)) {
+//        if (!SmoSingleton.INSTANCE.singletonExecuteSMO(gdParameterSmo)) {
+//            gdParameterSmoMapper.deleteByPrimaryKey(gdParameterSmo.getId());
+//            gdRunningStateMapper.updateByUserNoAndModuleName(userNo, Const.Module.MODULE_SMO, Const.RunningState.IDLE);
+//            return ServerResponse.createByErrorMessage("仿真失败");
+//        }
+
+        SMO smo = null;
+        try {
+            if (smo == null) {
+                smo = new SMO();
+            }
+            smo.EUV_Pixelated_SMO_MAIN(4, gdParameterSmo.getCoreNum(), gdParameterSmo.getMaskDimension(),
+                    gdParameterSmo.getPixelSize(), gdParameterSmo.getReflect(), gdParameterSmo.getAbsorb(),
+                    gdParameterSmo.getShadowNear(), gdParameterSmo.getShadowFar(), gdParameterSmo.getWavelength(),
+                    gdParameterSmo.getSigmaIn(), gdParameterSmo.getSigmaOut(), gdParameterSmo.getTis(),
+                    gdParameterSmo.getNa(), gdParameterSmo.getRatio(), gdParameterSmo.getStepSource(),
+                    gdParameterSmo.getOmegaSourceQua(), gdParameterSmo.getStepMaskMain(), gdParameterSmo.getStepMaskSraf(),
+                    gdParameterSmo.getOmegaMaskQua(), gdParameterSmo.getMaxloopSmo(), gdParameterSmo.getThreshold(),
+                    gdParameterSmo.getTr(), gdParameterSmo.getaSource(),
+                    PropertiesUtil.getProperty("ftp.server.path") + Const.UPLOAD_FILE_PATH + File.separator + gdParameterSmo.getInputMask());
+        } catch (MWException e) {
+            e.printStackTrace();
             gdParameterSmoMapper.deleteByPrimaryKey(gdParameterSmo.getId());
+            gdRunningStateMapper.updateByUserNoAndModuleName(userNo, Const.Module.MODULE_SMO, Const.RunningState.IDLE);
             return ServerResponse.createByErrorMessage("仿真失败");
+        } finally {
+            if (smo != null) {
+                smo.dispose();
+            }
         }
 
 //        try {
@@ -60,16 +95,17 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
 //        }
         Date endTime = new Date();
 
-        Subject subject = SecurityUtils.getSubject();
+
 
         LOGGER.info("存储仿真结果...");
         GDResultSmo gdResultSmo = new GDResultSmo();
         gdResultSmo.setParametersId(gdParameterSmo.getId());
-        gdResultSmo.setUserNo((String) subject.getPrincipal());
+        gdResultSmo.setUserNo(userNo);
         gdResultSmo = fillGDResultSmoFilepath(gdResultSmo);
 
         if (iDataPersistenceService.storeSmoResult(gdResultSmo) == null) {
             gdParameterSmoMapper.deleteByPrimaryKey(gdParameterSmo.getId());
+            gdRunningStateMapper.updateByUserNoAndModuleName(userNo, Const.Module.MODULE_SMO, Const.RunningState.IDLE);
             return ServerResponse.createByErrorMessage("仿真结果存储失败");
         }
 
@@ -86,10 +122,12 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
         if (iDataPersistenceService.storeSimulationRecord(gdSimulationRecord) == null) {
             gdParameterSmoMapper.deleteByPrimaryKey(gdParameterSmo.getId());
             gdResultSmoMapper.deleteByPrimaryKey(gdResultSmo.getId());
+            gdRunningStateMapper.updateByUserNoAndModuleName(userNo, Const.Module.MODULE_SMO, Const.RunningState.IDLE);
             return ServerResponse.createByErrorMessage("仿真记录存储失败");
         }
 
-        return ServerResponse.createBySuccess("仿真成功", gdResultSmo);
+        gdRunningStateMapper.executeSuccessResetAndPlus(userNo, Const.Module.MODULE_SMO, Const.RunningState.IDLE);
+        return ServerResponse.createBySuccessCodeMessage(ResponseCode.FINISHED.getCode(), "仿真成功", gdResultSmo);
     }
 
     private GDResultSmo fillGDResultSmoFilepath(GDResultSmo gdResultSmo) {

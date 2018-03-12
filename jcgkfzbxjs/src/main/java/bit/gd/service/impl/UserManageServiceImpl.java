@@ -4,9 +4,11 @@ import bit.gd.common.Const;
 import bit.gd.common.ServerResponse;
 import bit.gd.dao.GDRUserRoleMapper;
 import bit.gd.dao.GDRoleMapper;
+import bit.gd.dao.GDRunningStateMapper;
 import bit.gd.dao.GDUserMapper;
 import bit.gd.pojo.GDRUserRole;
 import bit.gd.pojo.GDRole;
+import bit.gd.pojo.GDRunningState;
 import bit.gd.pojo.GDUser;
 import bit.gd.service.IUserManageService;
 import bit.gd.util.PropertiesUtil;
@@ -38,6 +40,9 @@ public class UserManageServiceImpl implements IUserManageService {
 
     @Autowired
     GDRUserRoleMapper gdrUserRoleMapper;
+
+    @Autowired
+    GDRunningStateMapper gdRunningStateMapper;
 
     public int addUser(GDUser gdUser) {
         if (gdUserMapper.selectByUserNo(gdUser.getUserNo()) != null) {
@@ -174,5 +179,30 @@ public class UserManageServiceImpl implements IUserManageService {
         } else {
             return deleteRoleFromUser(userId, roleName);
         }
+    }
+
+    public boolean initializeRunningState(String userNo, String adminName) {
+        List<String> modules = Lists.newArrayList();
+        modules.add(Const.Module.MODULE_SMO);
+        modules.add(Const.Module.MODULE_OPC);
+        modules.add(Const.Module.MODULE_PDOD);
+        modules.add(Const.Module.MODULE_SMPWO);
+
+        GDRunningState gdRunningState = new GDRunningState();
+        gdRunningState.setUserNo(userNo);
+        gdRunningState.setAdminName(adminName);
+        gdRunningState.setRunningStatus(Const.RunningState.IDLE);
+        gdRunningState.setPerformedTasks(0);
+
+        for (String module : modules) {
+            gdRunningState.setModuleName(module);
+            gdRunningStateMapper.insert(gdRunningState);
+        }
+
+        return true;
+    }
+
+    public GDRunningState getUserModuleRunningState(String userNo, String moduleName) {
+        return gdRunningStateMapper.selectByUserUserNoAndModuleName(userNo, moduleName);
     }
 }

@@ -52,7 +52,7 @@ public class ConnectMatlabController {
                 if (simulatedVo == null) {
                     return ServerResponse.createByErrorMessage("获取相同参数的历史仿真结果失败");
                 }
-                return ServerResponse.createBySimulated(ResponseCode.SIMULATED.getCode(),
+                return ServerResponse.createBySuccessCodeMessage(ResponseCode.SIMULATED.getCode(),
                         "参数已仿真过", simulatedVo);
             }
             if (iDataPersistenceService.storeSmoParameters(gdParameterSmo) != null) {

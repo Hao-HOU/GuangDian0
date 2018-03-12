@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="bit.gd.dao.GDRunningStateMapper" >
+  <resultMap id="BaseResultMap" type="bit.gd.pojo.GDRunningState" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="user_no" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="module_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="running_status" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="performed_tasks" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="admin_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="update_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_no, module_name, running_status, performed_tasks, admin_name, create_time, 
+    update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gd_running_state
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gd_running_state
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="bit.gd.pojo.GDRunningState" >
+    insert into gd_running_state (id, user_no, module_name, 
+      running_status, performed_tasks, admin_name, 
+      create_time, update_time)
+    values (#{id,jdbcType=INTEGER}, #{userNo,jdbcType=VARCHAR}, #{moduleName,jdbcType=VARCHAR}, 
+      #{runningStatus,jdbcType=INTEGER}, #{performedTasks,jdbcType=INTEGER}, #{adminName,jdbcType=VARCHAR}, 
+      now(), now())
+  </insert>
+  <insert id="insertSelective" parameterType="bit.gd.pojo.GDRunningState" >
+    insert into gd_running_state
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userNo != null" >
+        user_no,
+      </if>
+      <if test="moduleName != null" >
+        module_name,
+      </if>
+      <if test="runningStatus != null" >
+        running_status,
+      </if>
+      <if test="performedTasks != null" >
+        performed_tasks,
+      </if>
+      <if test="adminName != null" >
+        admin_name,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userNo != null" >
+        #{userNo,jdbcType=VARCHAR},
+      </if>
+      <if test="moduleName != null" >
+        #{moduleName,jdbcType=VARCHAR},
+      </if>
+      <if test="runningStatus != null" >
+        #{runningStatus,jdbcType=INTEGER},
+      </if>
+      <if test="performedTasks != null" >
+        #{performedTasks,jdbcType=INTEGER},
+      </if>
+      <if test="adminName != null" >
+        #{adminName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="bit.gd.pojo.GDRunningState" >
+    update gd_running_state
+    <set >
+      <if test="userNo != null" >
+        user_no = #{userNo,jdbcType=VARCHAR},
+      </if>
+      <if test="moduleName != null" >
+        module_name = #{moduleName,jdbcType=VARCHAR},
+      </if>
+      <if test="runningStatus != null" >
+        running_status = #{runningStatus,jdbcType=INTEGER},
+      </if>
+      <if test="performedTasks != null" >
+        performed_tasks = #{performedTasks,jdbcType=INTEGER},
+      </if>
+      <if test="adminName != null" >
+        admin_name = #{adminName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = now(),
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="bit.gd.pojo.GDRunningState" >
+    update gd_running_state
+    set user_no = #{userNo,jdbcType=VARCHAR},
+      module_name = #{moduleName,jdbcType=VARCHAR},
+      running_status = #{runningStatus,jdbcType=INTEGER},
+      performed_tasks = #{performedTasks,jdbcType=INTEGER},
+      admin_name = #{adminName,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByUserNoAndModuleName" >
+    update gd_running_state
+    set
+    running_status = #{runningStatus,jdbcType=INTEGER},
+    update_time = now()
+    where
+      user_no = #{userNo,jdbcType=VARCHAR}
+    and
+      module_name = #{moduleName,jdbcType=VARCHAR}
+  </update>
+
+    <update id="executeSuccessResetAndPlus" >
+        update gd_running_state
+        set
+        running_status = #{runningStatus,jdbcType=INTEGER},
+        performed_tasks = performed_tasks + 1,
+        update_time = now()
+        where
+        user_no = #{userNo,jdbcType=VARCHAR}
+        and
+        module_name = #{moduleName,jdbcType=VARCHAR}
+    </update>
+
+  <select id="selectByUserUserNoAndModuleName" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from gd_running_state
+    where
+    user_no = #{userNo,jdbcType=VARCHAR}
+    and
+    module_name = #{moduleName,jdbcType=VARCHAR}
+  </select>
+</mapper>

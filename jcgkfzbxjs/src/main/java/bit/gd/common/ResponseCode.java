@@ -8,7 +8,10 @@ public enum ResponseCode {
     ERROR(1, "ERROR"),
     NEED_LOGIN(10, "NEED_LOGIN"),
     ILLEGAL_ARGUMENT(2, "ILLEGAL_ARGUMENT"),
-    SIMULATED(3, "SIMULATED");
+    SIMULATED(3, "SIMULATED"),
+    IDLE(8, "IDLE"),
+    RUNNING(9, "RUNNING"),
+    FINISHED(11, "FINISHED");
 
     private final int code;
     private final String desc;

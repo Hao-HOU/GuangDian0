@@ -4,9 +4,12 @@ import bit.gd.common.Const;
 import bit.gd.common.ResponseCode;
 import bit.gd.common.ServerResponse;
 import bit.gd.pojo.GDRole;
+import bit.gd.pojo.GDRunningState;
 import bit.gd.pojo.GDUser;
+import bit.gd.service.IFileService;
 import bit.gd.service.IUserManageService;
 import bit.gd.util.ShiroMD5Util;
+import bit.gd.vo.SmoIntermediateFileVo;
 import bit.gd.vo.UserVo;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,6 +33,9 @@ public class UserManageController {
     @Autowired
     IUserManageService iUserManageService;
 
+    @Autowired
+    IFileService iFileService;
+
     @RequestMapping("add_user.do")
     @ResponseBody
     public ServerResponse addUser(@RequestBody GDUser gdUser) {
@@ -39,6 +46,8 @@ public class UserManageController {
             gdUser.setAdminName((String) subject.getSession().getAttribute(Const.CURRENT_USER_NAME));
             int i = iUserManageService.addUser(gdUser);
             if (i > 0) {
+                iUserManageService.initializeRunningState(gdUser.getUserNo(),
+                        (String) subject.getSession().getAttribute(Const.CURRENT_USER_NAME));
                 return ServerResponse.createBySuccessMessage("添加用户成功");
             } else if (i == -1){
                 return ServerResponse.createByErrorMessage("该账号已存在");
@@ -257,5 +266,31 @@ public class UserManageController {
         }
     }
 
+    @RequestMapping("get_running_state.do")
+    @ResponseBody
+    public ServerResponse getRunningState(@RequestBody Map<String,Object> map) {
+        if (map.get("moduleName") == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),
+                    "参数错误");
+        }
+        String moduleName = map.get("moduleName").toString();
+        Subject subject = SecurityUtils.getSubject();
+        String userNo = (String) subject.getPrincipal();
+        if (subject.hasRole(moduleName) || subject.hasRole(Const.Role.ROLE_ADMIN)) {
+            GDRunningState gdRunningState = iUserManageService.getUserModuleRunningState(userNo, moduleName);
+            if (gdRunningState.getRunningStatus() == Const.RunningState.RUNNING) {
+                if (iFileService.copySmoIntermediateResult()) {
+                    return ServerResponse.createBySuccessCodeMessage(ResponseCode.RUNNING.getCode(), "中间结果已展示", new SmoIntermediateFileVo());
+                } else {
+                    return ServerResponse.createBySuccessCodeMessage(ResponseCode.RUNNING.getCode(), "暂无中间结果", gdRunningState);
+                }
+
+            } else {
+                return ServerResponse.createBySuccessCodeMessage(ResponseCode.IDLE.getCode(), "可提交新任务", gdRunningState);
+            }
+        } else {
+            return ServerResponse.createByErrorMessage("已无该模块权限，无法查看运行状态");
+        }
+    }
 
 }

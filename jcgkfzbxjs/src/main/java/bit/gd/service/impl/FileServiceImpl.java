@@ -7,6 +7,7 @@ import bit.gd.util.FileMD5Util;
 import bit.gd.util.PropertiesUtil;
 import bit.gd.vo.FilenameAndHashVo;
 import com.google.common.collect.Lists;
+import org.apache.commons.io.FileUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
@@ -14,9 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.Files;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -94,5 +95,59 @@ public class FileServiceImpl implements IFileService {
             LOGGER.info("文件名修改失败,未上传");
             return null;
         }
+    }
+
+    public boolean copySmoIntermediateResult() {
+        List<String> pngFiles = Lists.newArrayList();
+        //pngFiles.add(Const.SmoMatlabOutputFilename.SMO_Error_Convergence_Png);
+        pngFiles.add(Const.SmoMatlabOutputFilename.SMO_Mask_Binary_Png);
+        pngFiles.add(Const.SmoMatlabOutputFilename.SMO_Print_Image_Png);
+        pngFiles.add(Const.SmoMatlabOutputFilename.SMO_Source_Pattern_Png);
+
+        String matlabOutputPath = PropertiesUtil.getProperty("matlab.output.path");
+        String intermediateFilePath = System.getProperty("bit.gd") + Const.INTER_FILE_PATH + File.separator;
+
+
+
+        for (String png : pngFiles) {
+            String oldPath = matlabOutputPath + png;
+            LOGGER.info(oldPath);
+            String newPath = intermediateFilePath + png;
+            LOGGER.info(newPath);
+            if (!copyIntermediateResultPNG(oldPath, newPath)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean copyIntermediateResultPNG(String oldPath, String newPath) {
+        File source = new File(oldPath);
+        File dest = new File(newPath);
+        if (!source.exists()) {
+            return false;
+        }
+        if (dest.exists()) {
+            try {
+                FileUtils.copyFile(source, dest);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        } else {
+            try {
+                File fileParent = dest.getParentFile();
+                if (!fileParent.exists()) {
+                    fileParent.mkdirs();
+                }
+                FileUtils.copyFile(source, dest);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        return true;
     }
 }

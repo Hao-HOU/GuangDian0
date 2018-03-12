@@ -51,4 +51,6 @@ public interface IUserManageService {
     boolean initializeRunningState(String userNo, String adminName);
 
     GDRunningState getUserModuleRunningState(String userNo, String moduleName);
+
+    ServerResponse resetUserModuleRunningState(String userNo, String moduleName);
 }

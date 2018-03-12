@@ -111,9 +111,7 @@ public class FileServiceImpl implements IFileService {
 
         for (String png : pngFiles) {
             String oldPath = matlabOutputPath + png;
-            LOGGER.info(oldPath);
             String newPath = intermediateFilePath + png;
-            LOGGER.info(newPath);
             if (!copyIntermediateResultPNG(oldPath, newPath)) {
                 return false;
             }

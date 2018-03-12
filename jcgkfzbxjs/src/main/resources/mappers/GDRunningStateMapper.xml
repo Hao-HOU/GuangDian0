@@ -161,4 +161,15 @@
     and
     module_name = #{moduleName,jdbcType=VARCHAR}
   </select>
+
+    <update id="resetRunningStateByUserNoAndModuleName" >
+        update gd_running_state
+        set
+        running_status = 0,
+        update_time = now()
+        where
+        user_no = #{userNo,jdbcType=VARCHAR}
+        and
+        module_name = #{moduleName,jdbcType=VARCHAR}
+    </update>
 </mapper>

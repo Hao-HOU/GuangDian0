@@ -3,10 +3,13 @@ package bit.gd.vo;
 import bit.gd.common.Const;
 import bit.gd.util.PropertiesUtil;
 
+import java.io.File;
+
 /**
  * Created by Hao HOU on 2018/3/12.
  */
 public class SmoIntermediateFileVo {
+    private double error;
     private String ip;
     //private String smoErrorConvergencePng;
     private String smoMaskBinaryPng;
@@ -19,6 +22,14 @@ public class SmoIntermediateFileVo {
         this.smoMaskBinaryPng = Const.SmoMatlabOutputFilename.SMO_Mask_Binary_Png;
         this.smoPrintImagePng = Const.SmoMatlabOutputFilename.SMO_Print_Image_Png;
         this.smoSourcePatternPng = Const.SmoMatlabOutputFilename.SMO_Source_Pattern_Png;
+    }
+
+    public double getError() {
+        return error;
+    }
+
+    public void setError(double error) {
+        this.error = error;
     }
 
     public String getIp() {

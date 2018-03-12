@@ -26,4 +26,7 @@ public interface GDRunningStateMapper {
 
     GDRunningState selectByUserUserNoAndModuleName(@Param("userNo") String userNo,
                                                    @Param("moduleName") String moduleName);
+
+    int resetRunningStateByUserNoAndModuleName(@Param("userNo") String userNo,
+                                               @Param("moduleName") String moduleName);
 }

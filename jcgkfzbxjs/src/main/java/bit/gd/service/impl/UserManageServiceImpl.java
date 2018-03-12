@@ -205,4 +205,12 @@ public class UserManageServiceImpl implements IUserManageService {
     public GDRunningState getUserModuleRunningState(String userNo, String moduleName) {
         return gdRunningStateMapper.selectByUserUserNoAndModuleName(userNo, moduleName);
     }
+
+    public ServerResponse resetUserModuleRunningState(String userNo, String moduleName) {
+        if (gdRunningStateMapper.resetRunningStateByUserNoAndModuleName(userNo, moduleName) > 0) {
+            return ServerResponse.createBySuccessMessage("重置运行状态成功");
+        } else {
+            return ServerResponse.createByErrorMessage("重置运行状态失败");
+        }
+    }
 }

@@ -8,6 +8,8 @@ import bit.gd.pojo.GDRunningState;
 import bit.gd.pojo.GDUser;
 import bit.gd.service.IFileService;
 import bit.gd.service.IUserManageService;
+import bit.gd.util.JMatIOUtil;
+import bit.gd.util.PropertiesUtil;
 import bit.gd.util.ShiroMD5Util;
 import bit.gd.vo.SmoIntermediateFileVo;
 import bit.gd.vo.UserVo;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -280,7 +283,11 @@ public class UserManageController {
             GDRunningState gdRunningState = iUserManageService.getUserModuleRunningState(userNo, moduleName);
             if (gdRunningState.getRunningStatus() == Const.RunningState.RUNNING) {
                 if (iFileService.copySmoIntermediateResult()) {
-                    return ServerResponse.createBySuccessCodeMessage(ResponseCode.RUNNING.getCode(), "中间结果已展示", new SmoIntermediateFileVo());
+                    SmoIntermediateFileVo smoIntermediateFileVo = new SmoIntermediateFileVo();
+                    double error = JMatIOUtil.getErrorMatValue( PropertiesUtil.getProperty("matlab.output.path")
+                            + File.separator + Const.SmoMatlabOutputFilename.SMO_Error_Mat);
+                    smoIntermediateFileVo.setError(error);
+                    return ServerResponse.createBySuccessCodeMessage(ResponseCode.RUNNING.getCode(), "已有中间结果", smoIntermediateFileVo);
                 } else {
                     return ServerResponse.createBySuccessCodeMessage(ResponseCode.RUNNING.getCode(), "暂无中间结果", gdRunningState);
                 }
@@ -291,6 +298,24 @@ public class UserManageController {
         } else {
             return ServerResponse.createByErrorMessage("已无该模块权限，无法查看运行状态");
         }
+    }
+
+    @RequestMapping("reset_running_state.do")
+    @ResponseBody
+    public ServerResponse resetRunningState(@RequestBody Map<String,Object> map) {
+        if (map.get("moduleName") == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),
+                    "参数错误");
+        }
+
+        String moduleName = map.get("moduleName").toString();
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.hasRole(moduleName) || subject.hasRole(Const.Role.ROLE_ADMIN)) {
+            return iUserManageService.resetUserModuleRunningState((String) subject.getPrincipal(), moduleName);
+        } else {
+            return ServerResponse.createByErrorMessage("已无该模块权限，无法重置运行状态");
+        }
+
     }
 
 }

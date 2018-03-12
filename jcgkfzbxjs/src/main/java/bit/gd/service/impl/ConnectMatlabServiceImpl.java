@@ -50,6 +50,8 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
     @Autowired
     GDRunningStateMapper gdRunningStateMapper;
 
+    private SMO smo = null;
+
     public ServerResponse executeSmoSimulation(GDParameterSmo gdParameterSmo) {
         Subject subject = SecurityUtils.getSubject();
         String userNo = (String) subject.getPrincipal();
@@ -63,7 +65,6 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
 //            return ServerResponse.createByErrorMessage("仿真失败");
 //        }
 
-        SMO smo = null;
         try {
             if (smo == null) {
                 smo = new SMO();

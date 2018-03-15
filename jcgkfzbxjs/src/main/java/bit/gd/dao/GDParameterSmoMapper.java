@@ -2,6 +2,8 @@ package bit.gd.dao;
 
 import bit.gd.pojo.GDParameterSmo;
 
+import java.util.List;
+
 public interface GDParameterSmoMapper {
     int deleteByPrimaryKey(Integer id);
 
@@ -15,5 +17,5 @@ public interface GDParameterSmoMapper {
 
     int updateByPrimaryKey(GDParameterSmo record);
 
-    GDParameterSmo selectIdByRecord(GDParameterSmo record);
+    List<GDParameterSmo> selectIdByRecord(GDParameterSmo record);
 }

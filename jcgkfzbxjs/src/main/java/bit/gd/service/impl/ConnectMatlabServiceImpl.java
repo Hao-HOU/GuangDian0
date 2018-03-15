@@ -50,7 +50,8 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
     @Autowired
     GDRunningStateMapper gdRunningStateMapper;
 
-    private SMO smo = null;
+    @Autowired
+    SMO smo;
 
     public ServerResponse executeSmoSimulation(GDParameterSmo gdParameterSmo) {
         Subject subject = SecurityUtils.getSubject();
@@ -66,9 +67,6 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
 //        }
 
         try {
-            if (smo == null) {
-                smo = new SMO();
-            }
             smo.EUV_Pixelated_SMO_MAIN(4, gdParameterSmo.getCoreNum(), gdParameterSmo.getMaskDimension(),
                     gdParameterSmo.getPixelSize(), gdParameterSmo.getReflect(), gdParameterSmo.getAbsorb(),
                     gdParameterSmo.getShadowNear(), gdParameterSmo.getShadowFar(), gdParameterSmo.getWavelength(),

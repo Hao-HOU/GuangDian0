@@ -37,8 +37,8 @@ public class ServerResponse<T> implements Serializable {
     @JsonIgnore
     //使之不在json序列化结果当中
     public boolean isSuccess() {
-        return this.status == ResponseCode.SUCCESS.getCode()
-                || this.status == ResponseCode.FINISHED.getCode();
+        return !(this.status == ResponseCode.ERROR.getCode()
+                || this.status == ResponseCode.ILLEGAL_ARGUMENT.getCode());
     }
 
     public int getStatus() {

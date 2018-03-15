@@ -17,5 +17,7 @@
 
     <import resource="applicationContext-datasource.xml"/>
 
+    <bean id="smo" class="euvsmosyy.SMO"/>
+
 
 </beans>

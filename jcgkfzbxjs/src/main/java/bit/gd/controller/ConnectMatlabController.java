@@ -46,6 +46,24 @@ public class ConnectMatlabController {
         Subject subject = SecurityUtils.getSubject();
         if (subject.hasRole(Const.Role.ROLE_ADMIN) || subject.hasRole(Const.Role.ROLE_SMO)) {
             gdParameterSmo.setUserNo((String) subject.getPrincipal());
+
+            if (iDataPersistenceService.storeSmoParameters(gdParameterSmo) != null) {
+                LOGGER.info("用户[{}]运行SMO模块所用参数存储成功，仿真开始...", subject.getPrincipal());
+                return iConnectMatlabService.executeSmoSimulation(gdParameterSmo);
+            } else {
+                LOGGER.info("用户[{}]运行SMO模块所用参数存储失败", subject.getPrincipal());
+                return ServerResponse.createByErrorMessage("参数存储失败，仿真不能开始");
+            }
+        } else {
+            return ServerResponse.createByErrorMessage("无权限使用该模块，请联系管理员");
+        }
+    }
+
+    @RequestMapping("smo_parameters_simulated.do")
+    @ResponseBody
+    public ServerResponse checkSmoParametersSimulated(@RequestBody GDParameterSmo gdParameterSmo) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.hasRole(Const.Role.ROLE_ADMIN) || subject.hasRole(Const.Role.ROLE_SMO)) {
             if (iDataPersistenceService.checkSmoParametersSimulated(gdParameterSmo) != null) {
                 SimulatedVo simulatedVo = iDataPersistenceService.getSimulatedVo(Const.Module.MODULE_SMO,
                         iDataPersistenceService.checkSmoParametersSimulated(gdParameterSmo).getId());
@@ -54,13 +72,8 @@ public class ConnectMatlabController {
                 }
                 return ServerResponse.createBySuccessCodeMessage(ResponseCode.SIMULATED.getCode(),
                         "参数已仿真过", simulatedVo);
-            }
-            if (iDataPersistenceService.storeSmoParameters(gdParameterSmo) != null) {
-                LOGGER.info("用户[{}]运行SMO模块所用参数存储成功，仿真开始...", subject.getPrincipal());
-                return iConnectMatlabService.executeSmoSimulation(gdParameterSmo);
             } else {
-                LOGGER.info("用户[{}]运行SMO模块所用参数存储失败", subject.getPrincipal());
-                return ServerResponse.createByErrorMessage("参数存储失败，仿真不能开始");
+                return ServerResponse.createBySuccessMessage("参数未仿真过");
             }
         } else {
             return ServerResponse.createByErrorMessage("无权限使用该模块，请联系管理员");

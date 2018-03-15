@@ -11,6 +11,8 @@ import bit.gd.vo.SimulatedVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by Hao HOU on 2018/3/7.
  */
@@ -33,7 +35,12 @@ public class DataPersistenceServiceImpl implements IDataPersistenceService {
     }
 
     public GDParameterSmo checkSmoParametersSimulated(GDParameterSmo gdParameterSmo) {
-        return gdParameterSmoMapper.selectIdByRecord(gdParameterSmo);
+        List<GDParameterSmo> gdParameterSmoList = gdParameterSmoMapper.selectIdByRecord(gdParameterSmo);
+        if (gdParameterSmoList.isEmpty()) {
+            return null;
+        } else {
+            return gdParameterSmoList.get(gdParameterSmoList.size() - 1);
+        }
     }
 
     public GDResultSmo storeSmoResult(GDResultSmo gdResultSmo) {

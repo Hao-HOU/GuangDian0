@@ -13,13 +13,15 @@ public class GDResultSmo {
 
     private String errorWeightMat;
 
+    private String errorConvergenceWeightPng;
+
     private String maskPatternMat;
 
     private String printImageMat;
 
     private String sourcePatternMat;
 
-    private String maskBinaryPng;
+    private String maskPatternPng;
 
     private String printImagePng;
 
@@ -29,16 +31,17 @@ public class GDResultSmo {
 
     private Date createTime;
 
-    public GDResultSmo(Integer id, Integer parametersId, String userNo, String errorMat, String errorWeightMat, String maskPatternMat, String printImageMat, String sourcePatternMat, String maskBinaryPng, String printImagePng, String sourcePatternPng, String errorConvergencePng, Date createTime) {
+    public GDResultSmo(Integer id, Integer parametersId, String userNo, String errorMat, String errorWeightMat, String errorConvergenceWeightPng, String maskPatternMat, String printImageMat, String sourcePatternMat, String maskPatternPng, String printImagePng, String sourcePatternPng, String errorConvergencePng, Date createTime) {
         this.id = id;
         this.parametersId = parametersId;
         this.userNo = userNo;
         this.errorMat = errorMat;
         this.errorWeightMat = errorWeightMat;
+        this.errorConvergenceWeightPng = errorConvergenceWeightPng;
         this.maskPatternMat = maskPatternMat;
         this.printImageMat = printImageMat;
         this.sourcePatternMat = sourcePatternMat;
-        this.maskBinaryPng = maskBinaryPng;
+        this.maskPatternPng = maskPatternPng;
         this.printImagePng = printImagePng;
         this.sourcePatternPng = sourcePatternPng;
         this.errorConvergencePng = errorConvergencePng;
@@ -89,6 +92,14 @@ public class GDResultSmo {
         this.errorWeightMat = errorWeightMat == null ? null : errorWeightMat.trim();
     }
 
+    public String getErrorConvergenceWeightPng() {
+        return errorConvergenceWeightPng;
+    }
+
+    public void setErrorConvergenceWeightPng(String errorConvergenceWeightPng) {
+        this.errorConvergenceWeightPng = errorConvergenceWeightPng == null ? null : errorConvergenceWeightPng.trim();
+    }
+
     public String getMaskPatternMat() {
         return maskPatternMat;
     }
@@ -113,12 +124,12 @@ public class GDResultSmo {
         this.sourcePatternMat = sourcePatternMat == null ? null : sourcePatternMat.trim();
     }
 
-    public String getMaskBinaryPng() {
-        return maskBinaryPng;
+    public String getMaskPatternPng() {
+        return maskPatternPng;
     }
 
-    public void setMaskBinaryPng(String maskBinaryPng) {
-        this.maskBinaryPng = maskBinaryPng == null ? null : maskBinaryPng.trim();
+    public void setMaskPatternPng(String maskPatternPng) {
+        this.maskPatternPng = maskPatternPng == null ? null : maskPatternPng.trim();
     }
 
     public String getPrintImagePng() {

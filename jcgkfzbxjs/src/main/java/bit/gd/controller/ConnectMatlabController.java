@@ -1,6 +1,5 @@
 package bit.gd.controller;
 
-import add.Matlab2Java;
 import bit.gd.common.Const;
 import bit.gd.common.ResponseCode;
 import bit.gd.common.ServerResponse;
@@ -8,14 +7,6 @@ import bit.gd.pojo.GDParameterSmo;
 import bit.gd.service.IConnectMatlabService;
 import bit.gd.service.IDataPersistenceService;
 import bit.gd.vo.SimulatedVo;
-import com.mathworks.toolbox.javabuilder.MWException;
-import com.mathworks.toolbox.javabuilder.MWNumericArray;
-import matlabcontrol.MatlabConnectionException;
-import matlabcontrol.MatlabInvocationException;
-import matlabcontrol.MatlabProxy;
-import matlabcontrol.MatlabProxyFactory;
-import matlabcontrol.extensions.MatlabNumericArray;
-import matlabcontrol.extensions.MatlabTypeConverter;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;

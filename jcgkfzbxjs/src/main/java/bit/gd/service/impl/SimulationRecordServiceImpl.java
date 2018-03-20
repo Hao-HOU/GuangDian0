@@ -134,10 +134,11 @@ public class SimulationRecordServiceImpl implements ISimulationRecordService{
         GDResultSmo gdResultSmo = gdResultSmoMapper.selectByPrimaryKey(resultId);
         FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getErrorMat(), smoResultPath);
         FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getErrorWeightMat(), smoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getErrorConvergenceWeightPng(), smoResultPath);
         FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getMaskPatternMat(), smoResultPath);
         FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getPrintImageMat(), smoResultPath);
         FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getSourcePatternMat(), smoResultPath);
-        FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getMaskBinaryPng(), smoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getMaskPatternPng(), smoResultPath);
         FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getPrintImagePng(), smoResultPath);
         FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getSourcePatternPng(), smoResultPath);
         FTPUtil.moveFile(Const.RESULT_PATH_SMO, gdResultSmo.getErrorConvergencePng(), smoResultPath);

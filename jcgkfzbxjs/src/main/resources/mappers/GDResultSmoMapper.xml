@@ -8,10 +8,11 @@
       <arg column="user_no" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="error_mat" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="error_weight_mat" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="error_convergence_weight_png" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="mask_pattern_mat" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="print_image_mat" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="source_pattern_mat" jdbcType="VARCHAR" javaType="java.lang.String" />
-      <arg column="mask_binary_png" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="mask_pattern_png" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="print_image_png" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="source_pattern_png" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="error_convergence_png" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -19,9 +20,9 @@
     </constructor>
   </resultMap>
   <sql id="Base_Column_List" >
-    id, parameters_id, user_no, error_mat, error_weight_mat, mask_pattern_mat, print_image_mat, 
-    source_pattern_mat, mask_binary_png, print_image_png, source_pattern_png, error_convergence_png, 
-    create_time
+    id, parameters_id, user_no, error_mat, error_weight_mat, error_convergence_weight_png, 
+    mask_pattern_mat, print_image_mat, source_pattern_mat, mask_pattern_png, print_image_png, 
+    source_pattern_png, error_convergence_png, create_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -33,17 +34,17 @@
     delete from gd_result_smo
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="bit.gd.pojo.GDResultSmo" useGeneratedKeys="true" keyProperty="id" >
+  <insert id="insert" parameterType="bit.gd.pojo.GDResultSmo" useGeneratedKeys="true" keyProperty="id">
     insert into gd_result_smo (id, parameters_id, user_no, 
-      error_mat, error_weight_mat, mask_pattern_mat, 
-      print_image_mat, source_pattern_mat, mask_binary_png, 
-      print_image_png, source_pattern_png, error_convergence_png, 
-      create_time)
+      error_mat, error_weight_mat, error_convergence_weight_png, 
+      mask_pattern_mat, print_image_mat, source_pattern_mat, 
+      mask_pattern_png, print_image_png, source_pattern_png, 
+      error_convergence_png, create_time)
     values (#{id,jdbcType=INTEGER}, #{parametersId,jdbcType=INTEGER}, #{userNo,jdbcType=VARCHAR}, 
-      #{errorMat,jdbcType=VARCHAR}, #{errorWeightMat,jdbcType=VARCHAR}, #{maskPatternMat,jdbcType=VARCHAR}, 
-      #{printImageMat,jdbcType=VARCHAR}, #{sourcePatternMat,jdbcType=VARCHAR}, #{maskBinaryPng,jdbcType=VARCHAR}, 
-      #{printImagePng,jdbcType=VARCHAR}, #{sourcePatternPng,jdbcType=VARCHAR}, #{errorConvergencePng,jdbcType=VARCHAR}, 
-      now())
+      #{errorMat,jdbcType=VARCHAR}, #{errorWeightMat,jdbcType=VARCHAR}, #{errorConvergenceWeightPng,jdbcType=VARCHAR}, 
+      #{maskPatternMat,jdbcType=VARCHAR}, #{printImageMat,jdbcType=VARCHAR}, #{sourcePatternMat,jdbcType=VARCHAR}, 
+      #{maskPatternPng,jdbcType=VARCHAR}, #{printImagePng,jdbcType=VARCHAR}, #{sourcePatternPng,jdbcType=VARCHAR}, 
+      #{errorConvergencePng,jdbcType=VARCHAR}, now())
   </insert>
   <insert id="insertSelective" parameterType="bit.gd.pojo.GDResultSmo" >
     insert into gd_result_smo
@@ -63,6 +64,9 @@
       <if test="errorWeightMat != null" >
         error_weight_mat,
       </if>
+      <if test="errorConvergenceWeightPng != null" >
+        error_convergence_weight_png,
+      </if>
       <if test="maskPatternMat != null" >
         mask_pattern_mat,
       </if>
@@ -72,8 +76,8 @@
       <if test="sourcePatternMat != null" >
         source_pattern_mat,
       </if>
-      <if test="maskBinaryPng != null" >
-        mask_binary_png,
+      <if test="maskPatternPng != null" >
+        mask_pattern_png,
       </if>
       <if test="printImagePng != null" >
         print_image_png,
@@ -104,6 +108,9 @@
       <if test="errorWeightMat != null" >
         #{errorWeightMat,jdbcType=VARCHAR},
       </if>
+      <if test="errorConvergenceWeightPng != null" >
+        #{errorConvergenceWeightPng,jdbcType=VARCHAR},
+      </if>
       <if test="maskPatternMat != null" >
         #{maskPatternMat,jdbcType=VARCHAR},
       </if>
@@ -113,8 +120,8 @@
       <if test="sourcePatternMat != null" >
         #{sourcePatternMat,jdbcType=VARCHAR},
       </if>
-      <if test="maskBinaryPng != null" >
-        #{maskBinaryPng,jdbcType=VARCHAR},
+      <if test="maskPatternPng != null" >
+        #{maskPatternPng,jdbcType=VARCHAR},
       </if>
       <if test="printImagePng != null" >
         #{printImagePng,jdbcType=VARCHAR},
@@ -145,6 +152,9 @@
       <if test="errorWeightMat != null" >
         error_weight_mat = #{errorWeightMat,jdbcType=VARCHAR},
       </if>
+      <if test="errorConvergenceWeightPng != null" >
+        error_convergence_weight_png = #{errorConvergenceWeightPng,jdbcType=VARCHAR},
+      </if>
       <if test="maskPatternMat != null" >
         mask_pattern_mat = #{maskPatternMat,jdbcType=VARCHAR},
       </if>
@@ -154,8 +164,8 @@
       <if test="sourcePatternMat != null" >
         source_pattern_mat = #{sourcePatternMat,jdbcType=VARCHAR},
       </if>
-      <if test="maskBinaryPng != null" >
-        mask_binary_png = #{maskBinaryPng,jdbcType=VARCHAR},
+      <if test="maskPatternPng != null" >
+        mask_pattern_png = #{maskPatternPng,jdbcType=VARCHAR},
       </if>
       <if test="printImagePng != null" >
         print_image_png = #{printImagePng,jdbcType=VARCHAR},
@@ -178,10 +188,11 @@
       user_no = #{userNo,jdbcType=VARCHAR},
       error_mat = #{errorMat,jdbcType=VARCHAR},
       error_weight_mat = #{errorWeightMat,jdbcType=VARCHAR},
+      error_convergence_weight_png = #{errorConvergenceWeightPng,jdbcType=VARCHAR},
       mask_pattern_mat = #{maskPatternMat,jdbcType=VARCHAR},
       print_image_mat = #{printImageMat,jdbcType=VARCHAR},
       source_pattern_mat = #{sourcePatternMat,jdbcType=VARCHAR},
-      mask_binary_png = #{maskBinaryPng,jdbcType=VARCHAR},
+      mask_pattern_png = #{maskPatternPng,jdbcType=VARCHAR},
       print_image_png = #{printImagePng,jdbcType=VARCHAR},
       source_pattern_png = #{sourcePatternPng,jdbcType=VARCHAR},
       error_convergence_png = #{errorConvergencePng,jdbcType=VARCHAR},

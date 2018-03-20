@@ -97,12 +97,13 @@ public class FileServiceImpl implements IFileService {
         }
     }
 
-    public boolean copySmoIntermediateResult() {
+    public boolean copySmoIntermediateResult(String userNo) {
         List<String> pngFiles = Lists.newArrayList();
-        //pngFiles.add(Const.SmoMatlabOutputFilename.SMO_Error_Convergence_Png);
-        pngFiles.add(Const.SmoMatlabOutputFilename.SMO_Mask_Binary_Png);
+        pngFiles.add(Const.SmoMatlabOutputFilename.SMO_Error_Convergence_Png);
+        pngFiles.add(Const.SmoMatlabOutputFilename.SMO_Mask_Pattern_Png);
         pngFiles.add(Const.SmoMatlabOutputFilename.SMO_Print_Image_Png);
         pngFiles.add(Const.SmoMatlabOutputFilename.SMO_Source_Pattern_Png);
+        pngFiles.add(Const.SmoMatlabOutputFilename.SMO_Error_Convergence_Weight_Png);
 
         String matlabOutputPath = PropertiesUtil.getProperty("matlab.output.path");
         String intermediateFilePath = System.getProperty("bit.gd") + Const.INTER_FILE_PATH + File.separator;
@@ -110,8 +111,8 @@ public class FileServiceImpl implements IFileService {
 
 
         for (String png : pngFiles) {
-            String oldPath = matlabOutputPath + png;
-            String newPath = intermediateFilePath + png;
+            String oldPath = matlabOutputPath + userNo + File.separator + png;
+            String newPath = intermediateFilePath + userNo + File.separator + png;
             if (!copyIntermediateResultPNG(oldPath, newPath)) {
                 return false;
             }

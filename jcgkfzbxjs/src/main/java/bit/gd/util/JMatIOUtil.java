@@ -27,4 +27,18 @@ public class JMatIOUtil {
 
         return matrix[0][0];
     }
+
+    public static double getIterationCount(String matFilePath) {
+        MatFileReader reader = null;
+        try {
+            reader = new MatFileReader(matFilePath);
+        } catch (IOException e) {
+            LOGGER.info("读取.mat文件中的值失败");
+        }
+        MLArray mlArray = reader.getMLArray("count");
+        MLDouble mlDouble = (MLDouble) mlArray;
+        double[][] matrix = (mlDouble.getArray());
+
+        return matrix[0][0];
+    }
 }

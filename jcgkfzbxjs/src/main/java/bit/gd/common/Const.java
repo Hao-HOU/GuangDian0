@@ -34,9 +34,11 @@ public class Const {
 
     public interface SmoMatlabOutputFilename {
         String SMO_Error_Mat = "error.mat";
+        String SMO_Iteration_Times_Mat = "Iteration_Times.mat";
         String SMO_Error_Convergence_Png = "error_convergence.png";
         String SMO_Error_Weight_Mat = "error_weight.mat";
-        String SMO_Mask_Binary_Png = "mask_binary.png";
+        String SMO_Error_Convergence_Weight_Png = "error_convergence_weight.png";
+        String SMO_Mask_Pattern_Png = "mask_pattern.png";
         String SMO_Mask_Pattern_Mat = "mask_pattern.mat";
         String SMO_Print_Image_Mat = "print_image.mat";
         String SMO_Print_Image_Png = "print_image.png";

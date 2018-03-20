@@ -50,7 +50,14 @@ public class CopyFileTest {
 
     @Test
     public void copyInter() {
-        Assert.assertTrue(iFileService.copySmoIntermediateResult());
+        Assert.assertTrue(iFileService.copySmoIntermediateResult("999"));
+    }
 
+    @Test
+    public void mkdirsTest() {
+        File noPath = new File("E:\\ztest\\sss\\aaa");
+        if (!noPath.exists()) {
+            noPath.mkdirs();
+        }
     }
 }

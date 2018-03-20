@@ -11,8 +11,8 @@ import java.io.IOException;
 public class JMatIOTest {
     @Test
     public void jMatIOTest() throws IOException {
-        MatFileReader reader = new MatFileReader("E:\\项目\\光电三期\\20180304syy_示例程序\\20180304syy改_EUV_SMO_Par_Test\\error.mat");
-        MLArray mlArray = reader.getMLArray("error");
+        MatFileReader reader = new MatFileReader("E:\\ztest\\GDOutput\\Iteration_Times.mat");
+        MLArray mlArray = reader.getMLArray("count");
         MLDouble mlDouble = (MLDouble) mlArray;
         double[][] matrix = (mlDouble.getArray());
         System.out.println(matrix[0][0]);

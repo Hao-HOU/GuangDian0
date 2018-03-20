@@ -10,18 +10,21 @@ import java.io.File;
  */
 public class SmoIntermediateFileVo {
     private double error;
+    private double iterationCount;
     private String ip;
-    //private String smoErrorConvergencePng;
+    private String smoErrorConvergencePng;
     private String smoMaskBinaryPng;
     private String smoPrintImagePng;
     private String smoSourcePatternPng;
+    private String smoErrorConvergenceWeightPng;
 
     public SmoIntermediateFileVo() {
         this.ip = PropertiesUtil.getProperty("tomcat.ip");
-        //this.smoErrorConvergencePng = Const.SmoMatlabOutputFilename.SMO_Error_Convergence_Png;
-        this.smoMaskBinaryPng = Const.SmoMatlabOutputFilename.SMO_Mask_Binary_Png;
+        this.smoErrorConvergencePng = Const.SmoMatlabOutputFilename.SMO_Error_Convergence_Png;
+        this.smoMaskBinaryPng = Const.SmoMatlabOutputFilename.SMO_Mask_Pattern_Png;
         this.smoPrintImagePng = Const.SmoMatlabOutputFilename.SMO_Print_Image_Png;
         this.smoSourcePatternPng = Const.SmoMatlabOutputFilename.SMO_Source_Pattern_Png;
+        this.smoErrorConvergenceWeightPng = Const.SmoMatlabOutputFilename.SMO_Error_Convergence_Weight_Png;
     }
 
     public double getError() {
@@ -32,13 +35,21 @@ public class SmoIntermediateFileVo {
         this.error = error;
     }
 
+    public double getIterationCount() {
+        return iterationCount;
+    }
+
+    public void setIterationCount(double iterationCount) {
+        this.iterationCount = iterationCount;
+    }
+
     public String getIp() {
         return ip;
     }
 
-    //    public String getSmoErrorConvergencePng() {
-//        return smoErrorConvergencePng;
-//    }
+        public String getSmoErrorConvergencePng() {
+        return smoErrorConvergencePng;
+    }
 
     public String getSmoMaskBinaryPng() {
         return smoMaskBinaryPng;
@@ -50,5 +61,9 @@ public class SmoIntermediateFileVo {
 
     public String getSmoSourcePatternPng() {
         return smoSourcePatternPng;
+    }
+
+    public String getSmoErrorConvergenceWeightPng() {
+        return smoErrorConvergenceWeightPng;
     }
 }

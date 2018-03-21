@@ -105,13 +105,33 @@ public class FileServiceImpl implements IFileService {
         pngFiles.add(Const.SmoMatlabOutputFilename.SMO_Source_Pattern_Png);
         pngFiles.add(Const.SmoMatlabOutputFilename.SMO_Error_Convergence_Weight_Png);
 
-        String matlabOutputPath = PropertiesUtil.getProperty("matlab.output.path");
+        String smoOutputPath = PropertiesUtil.getProperty("matlab.output.path.smo");
         String intermediateFilePath = System.getProperty("bit.gd") + Const.INTER_FILE_PATH + File.separator;
 
+        for (String png : pngFiles) {
+            String oldPath = smoOutputPath + userNo + File.separator + png;
+            String newPath = intermediateFilePath + userNo + File.separator + png;
+            if (!copyIntermediateResultPNG(oldPath, newPath)) {
+                return false;
+            }
+        }
 
+        return true;
+    }
+
+    public boolean copyOpcIntermediateResult(String userNo) {
+        List<String> pngFiles = Lists.newArrayList();
+        pngFiles.add(Const.OpcMatlabOutputFilename.OPC_Error_Convergence_Png);
+        pngFiles.add(Const.OpcMatlabOutputFilename.OPC_Mask_Pattern_Png);
+        pngFiles.add(Const.OpcMatlabOutputFilename.OPC_Print_Image_Png);
+        pngFiles.add(Const.OpcMatlabOutputFilename.OPC_Source_Pattern_Png);
+        pngFiles.add(Const.OpcMatlabOutputFilename.OPC_Error_Convergence_Weight_Png);
+
+        String opcOutputPath = PropertiesUtil.getProperty("matlab.output.path.opc");
+        String intermediateFilePath = System.getProperty("bit.gd") + Const.INTER_FILE_PATH + File.separator;
 
         for (String png : pngFiles) {
-            String oldPath = matlabOutputPath + userNo + File.separator + png;
+            String oldPath = opcOutputPath + userNo + File.separator + png;
             String newPath = intermediateFilePath + userNo + File.separator + png;
             if (!copyIntermediateResultPNG(oldPath, newPath)) {
                 return false;

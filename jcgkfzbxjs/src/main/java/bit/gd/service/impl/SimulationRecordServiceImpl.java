@@ -2,22 +2,13 @@ package bit.gd.service.impl;
 
 import bit.gd.common.Const;
 import bit.gd.common.ServerResponse;
-import bit.gd.dao.GDParameterSmoMapper;
-import bit.gd.dao.GDResultSmoMapper;
-import bit.gd.dao.GDSimulationRecordMapper;
-import bit.gd.dao.GDUserMapper;
-import bit.gd.pojo.GDParameterSmo;
-import bit.gd.pojo.GDResultSmo;
-import bit.gd.pojo.GDSimulationRecord;
-import bit.gd.pojo.GDUser;
+import bit.gd.dao.*;
+import bit.gd.pojo.*;
 import bit.gd.service.ISimulationRecordService;
 import bit.gd.util.FTPUtil;
 import bit.gd.util.JMatIOUtil;
 import bit.gd.util.PropertiesUtil;
-import bit.gd.vo.RecordDetailRequest;
-import bit.gd.vo.SearchSimulationRecordsRequest;
-import bit.gd.vo.SimulationRecordShowVo;
-import bit.gd.vo.SmoSimulationRecordDetailVo;
+import bit.gd.vo.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +37,12 @@ public class SimulationRecordServiceImpl implements ISimulationRecordService{
 
     @Autowired
     GDResultSmoMapper gdResultSmoMapper;
+
+    @Autowired
+    GDParameterOpcMapper gdParameterOpcMapper;
+
+    @Autowired
+    GDResultOpcMapper gdResultOpcMapper;
 
     public ServerResponse<PageInfo> getAllSimulationRecords(SearchSimulationRecordsRequest searchSimulationRecordsRequest) {
         PageHelper.startPage(searchSimulationRecordsRequest.getPageNum(), searchSimulationRecordsRequest.getPageSize());
@@ -109,7 +106,8 @@ public class SimulationRecordServiceImpl implements ISimulationRecordService{
                 return ServerResponse.createBySuccess(getSmoSimulationRecordDetail(recordDetailRequest.getParametersId(),
                         recordDetailRequest.getResultId()));
             case Const.Module.MODULE_OPC:
-                return ServerResponse.createBySuccessMessage("OPC模块暂未实现");
+                return ServerResponse.createBySuccess(getOpcSimulationRecordDetailVo(recordDetailRequest.getParametersId(),
+                        recordDetailRequest.getResultId()));
             case Const.Module.MODULE_PDOD:
                 return ServerResponse.createBySuccessMessage("PDOD模块暂未实现");
             case Const.Module.MODULE_SMPWO:
@@ -148,9 +146,41 @@ public class SimulationRecordServiceImpl implements ISimulationRecordService{
 
         smoSimulationRecordDetailVo.setGdResultSmo(gdResultSmo);
 
-
         smoSimulationRecordDetailVo.setIp(PropertiesUtil.getProperty("tomcat.ip"));
 
         return smoSimulationRecordDetailVo;
+    }
+
+    private OpcSimulationRecordDetailVo getOpcSimulationRecordDetailVo(int parametersId, int resultId) throws IOException {
+        OpcSimulationRecordDetailVo opcSimulationRecordDetailVo = new OpcSimulationRecordDetailVo();
+
+        String uploadPath = System.getProperty("bit.gd") + File.separator + Const.UPLOAD_FILE_PATH;
+        GDParameterOpc gdParameterOpc = gdParameterOpcMapper.selectByPrimaryKey(parametersId);
+        FTPUtil.moveFile(Const.UPLOAD_FILE_PATH, gdParameterOpc.getInputMask(), uploadPath);
+        opcSimulationRecordDetailVo.setGdParameterOpc(gdParameterOpc);
+
+        String opcResultPath = System.getProperty("bit.gd") + File.separator + Const.RESULT_PATH_OPC;
+
+        GDResultOpc gdResultOpc = gdResultOpcMapper.selectByPrimaryKey(resultId);
+        FTPUtil.moveFile(Const.RESULT_PATH_OPC, gdResultOpc.getErrorMat(), opcResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_OPC, gdResultOpc.getErrorWeightMat(), opcResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_OPC, gdResultOpc.getErrorConvergenceWeightPng(), opcResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_OPC, gdResultOpc.getMaskPatternMat(), opcResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_OPC, gdResultOpc.getPrintImageMat(), opcResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_OPC, gdResultOpc.getSourcePatternMat(), opcResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_OPC, gdResultOpc.getMaskPatternPng(), opcResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_OPC, gdResultOpc.getPrintImagePng(), opcResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_OPC, gdResultOpc.getSourcePatternPng(), opcResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_OPC, gdResultOpc.getErrorConvergencePng(), opcResultPath);
+
+        String errorMatPath = opcResultPath + File.separator + gdResultOpc.getErrorMat();
+
+        opcSimulationRecordDetailVo.setError(JMatIOUtil.getErrorMatValue(errorMatPath));
+
+        opcSimulationRecordDetailVo.setGdResultOpc(gdResultOpc);
+
+        opcSimulationRecordDetailVo.setIp(PropertiesUtil.getProperty("tomcat.ip"));
+
+        return opcSimulationRecordDetailVo;
     }
 }

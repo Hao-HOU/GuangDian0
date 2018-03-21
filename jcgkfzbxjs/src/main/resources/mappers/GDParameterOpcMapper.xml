@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="bit.gd.dao.GDParameterSmoMapper" >
-  <resultMap id="BaseResultMap" type="bit.gd.pojo.GDParameterSmo" >
+<mapper namespace="bit.gd.dao.GDParameterOpcMapper" >
+  <resultMap id="BaseResultMap" type="bit.gd.pojo.GDParameterOpc" >
     <constructor >
       <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="user_no" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -17,12 +17,10 @@
       <arg column="tis" jdbcType="DOUBLE" javaType="java.lang.Double" />
       <arg column="na" jdbcType="DOUBLE" javaType="java.lang.Double" />
       <arg column="ratio" jdbcType="DOUBLE" javaType="java.lang.Double" />
-      <arg column="step_source" jdbcType="DOUBLE" javaType="java.lang.Double" />
-      <arg column="omega_source_qua" jdbcType="DOUBLE" javaType="java.lang.Double" />
-      <arg column="step_mask_main" jdbcType="DOUBLE" javaType="java.lang.Double" />
-      <arg column="step_mask_sraf" jdbcType="DOUBLE" javaType="java.lang.Double" />
-      <arg column="omega_mask_qua" jdbcType="DOUBLE" javaType="java.lang.Double" />
-      <arg column="maxloop_smo" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="step_main" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="step_sraf" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="omega_qua" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="maxloop_opc" jdbcType="DOUBLE" javaType="java.lang.Double" />
       <arg column="threshold" jdbcType="DOUBLE" javaType="java.lang.Double" />
       <arg column="tr" jdbcType="DOUBLE" javaType="java.lang.Double" />
       <arg column="a_source" jdbcType="DOUBLE" javaType="java.lang.Double" />
@@ -35,28 +33,27 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, user_no, mask_dimension, pixel_size, reflect, absorb, shadow_near, shadow_far, 
-    wavelength, sigma_in, sigma_out, tis, na, ratio, step_source, omega_source_qua, step_mask_main, 
-    step_mask_sraf, omega_mask_qua, maxloop_smo, threshold, tr, a_source, core_num, input_mask, 
-    input_mask_hash, create_time, update_time
+    wavelength, sigma_in, sigma_out, tis, na, ratio, step_main, step_sraf, omega_qua, 
+    maxloop_opc, threshold, tr, a_source, core_num, input_mask, input_mask_hash, create_time, 
+    update_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
-    from gd_parameter_smo
+    from gd_parameter_opc
     where id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
-    delete from gd_parameter_smo
+    delete from gd_parameter_opc
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="bit.gd.pojo.GDParameterSmo" useGeneratedKeys="true" keyProperty="id" >
-    insert into gd_parameter_smo (id, user_no, mask_dimension, 
+  <insert id="insert" parameterType="bit.gd.pojo.GDParameterOpc" useGeneratedKeys="true" keyProperty="id">
+    insert into gd_parameter_opc (id, user_no, mask_dimension, 
       pixel_size, reflect, absorb, 
       shadow_near, shadow_far, wavelength, 
       sigma_in, sigma_out, tis, 
-      na, ratio, step_source, 
-      omega_source_qua, step_mask_main, step_mask_sraf, 
-      omega_mask_qua, maxloop_smo, threshold, 
+      na, ratio, step_main, step_sraf, 
+      omega_qua, maxloop_opc, threshold, 
       tr, a_source, core_num, 
       input_mask, input_mask_hash, create_time, 
       update_time)
@@ -64,15 +61,14 @@
       #{pixelSize,jdbcType=DOUBLE}, #{reflect,jdbcType=DOUBLE}, #{absorb,jdbcType=DOUBLE}, 
       #{shadowNear,jdbcType=DOUBLE}, #{shadowFar,jdbcType=DOUBLE}, #{wavelength,jdbcType=DOUBLE}, 
       #{sigmaIn,jdbcType=DOUBLE}, #{sigmaOut,jdbcType=DOUBLE}, #{tis,jdbcType=DOUBLE}, 
-      #{na,jdbcType=DOUBLE}, #{ratio,jdbcType=DOUBLE}, #{stepSource,jdbcType=DOUBLE}, 
-      #{omegaSourceQua,jdbcType=DOUBLE}, #{stepMaskMain,jdbcType=DOUBLE}, #{stepMaskSraf,jdbcType=DOUBLE}, 
-      #{omegaMaskQua,jdbcType=DOUBLE}, #{maxloopSmo,jdbcType=DOUBLE}, #{threshold,jdbcType=DOUBLE}, 
+      #{na,jdbcType=DOUBLE}, #{ratio,jdbcType=DOUBLE}, #{stepMain,jdbcType=DOUBLE}, #{stepSraf,jdbcType=DOUBLE}, 
+      #{omegaQua,jdbcType=DOUBLE}, #{maxloopOpc,jdbcType=DOUBLE}, #{threshold,jdbcType=DOUBLE}, 
       #{tr,jdbcType=DOUBLE}, #{aSource,jdbcType=DOUBLE}, #{coreNum,jdbcType=DOUBLE}, 
       #{inputMask,jdbcType=VARCHAR}, #{inputMaskHash,jdbcType=VARCHAR}, now(),
       now())
   </insert>
-  <insert id="insertSelective" parameterType="bit.gd.pojo.GDParameterSmo" >
-    insert into gd_parameter_smo
+  <insert id="insertSelective" parameterType="bit.gd.pojo.GDParameterOpc" >
+    insert into gd_parameter_opc
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
         id,
@@ -116,23 +112,17 @@
       <if test="ratio != null" >
         ratio,
       </if>
-      <if test="stepSource != null" >
-        step_source,
+      <if test="stepMain != null" >
+        step_main,
       </if>
-      <if test="omegaSourceQua != null" >
-        omega_source_qua,
+      <if test="stepSraf != null" >
+        step_sraf,
       </if>
-      <if test="stepMaskMain != null" >
-        step_mask_main,
+      <if test="omegaQua != null" >
+        omega_qua,
       </if>
-      <if test="stepMaskSraf != null" >
-        step_mask_sraf,
-      </if>
-      <if test="omegaMaskQua != null" >
-        omega_mask_qua,
-      </if>
-      <if test="maxloopSmo != null" >
-        maxloop_smo,
+      <if test="maxloopOpc != null" >
+        maxloop_opc,
       </if>
       <if test="threshold != null" >
         threshold,
@@ -202,23 +192,17 @@
       <if test="ratio != null" >
         #{ratio,jdbcType=DOUBLE},
       </if>
-      <if test="stepSource != null" >
-        #{stepSource,jdbcType=DOUBLE},
+      <if test="stepMain != null" >
+        #{stepMain,jdbcType=DOUBLE},
       </if>
-      <if test="omegaSourceQua != null" >
-        #{omegaSourceQua,jdbcType=DOUBLE},
+      <if test="stepSraf != null" >
+        #{stepSraf,jdbcType=DOUBLE},
       </if>
-      <if test="stepMaskMain != null" >
-        #{stepMaskMain,jdbcType=DOUBLE},
+      <if test="omegaQua != null" >
+        #{omegaQua,jdbcType=DOUBLE},
       </if>
-      <if test="stepMaskSraf != null" >
-        #{stepMaskSraf,jdbcType=DOUBLE},
-      </if>
-      <if test="omegaMaskQua != null" >
-        #{omegaMaskQua,jdbcType=DOUBLE},
-      </if>
-      <if test="maxloopSmo != null" >
-        #{maxloopSmo,jdbcType=DOUBLE},
+      <if test="maxloopOpc != null" >
+        #{maxloopOpc,jdbcType=DOUBLE},
       </if>
       <if test="threshold != null" >
         #{threshold,jdbcType=DOUBLE},
@@ -246,8 +230,8 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="bit.gd.pojo.GDParameterSmo" >
-    update gd_parameter_smo
+  <update id="updateByPrimaryKeySelective" parameterType="bit.gd.pojo.GDParameterOpc" >
+    update gd_parameter_opc
     <set >
       <if test="userNo != null" >
         user_no = #{userNo,jdbcType=VARCHAR},
@@ -288,23 +272,17 @@
       <if test="ratio != null" >
         ratio = #{ratio,jdbcType=DOUBLE},
       </if>
-      <if test="stepSource != null" >
-        step_source = #{stepSource,jdbcType=DOUBLE},
+      <if test="stepMain != null" >
+        step_main = #{stepMain,jdbcType=DOUBLE},
       </if>
-      <if test="omegaSourceQua != null" >
-        omega_source_qua = #{omegaSourceQua,jdbcType=DOUBLE},
+      <if test="stepSraf != null" >
+        step_sraf = #{stepSraf,jdbcType=DOUBLE},
       </if>
-      <if test="stepMaskMain != null" >
-        step_mask_main = #{stepMaskMain,jdbcType=DOUBLE},
+      <if test="omegaQua != null" >
+        omega_qua = #{omegaQua,jdbcType=DOUBLE},
       </if>
-      <if test="stepMaskSraf != null" >
-        step_mask_sraf = #{stepMaskSraf,jdbcType=DOUBLE},
-      </if>
-      <if test="omegaMaskQua != null" >
-        omega_mask_qua = #{omegaMaskQua,jdbcType=DOUBLE},
-      </if>
-      <if test="maxloopSmo != null" >
-        maxloop_smo = #{maxloopSmo,jdbcType=DOUBLE},
+      <if test="maxloopOpc != null" >
+        maxloop_opc = #{maxloopOpc,jdbcType=DOUBLE},
       </if>
       <if test="threshold != null" >
         threshold = #{threshold,jdbcType=DOUBLE},
@@ -333,8 +311,8 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="bit.gd.pojo.GDParameterSmo" >
-    update gd_parameter_smo
+  <update id="updateByPrimaryKey" parameterType="bit.gd.pojo.GDParameterOpc" >
+    update gd_parameter_opc
     set user_no = #{userNo,jdbcType=VARCHAR},
       mask_dimension = #{maskDimension,jdbcType=DOUBLE},
       pixel_size = #{pixelSize,jdbcType=DOUBLE},
@@ -348,12 +326,10 @@
       tis = #{tis,jdbcType=DOUBLE},
       na = #{na,jdbcType=DOUBLE},
       ratio = #{ratio,jdbcType=DOUBLE},
-      step_source = #{stepSource,jdbcType=DOUBLE},
-      omega_source_qua = #{omegaSourceQua,jdbcType=DOUBLE},
-      step_mask_main = #{stepMaskMain,jdbcType=DOUBLE},
-      step_mask_sraf = #{stepMaskSraf,jdbcType=DOUBLE},
-      omega_mask_qua = #{omegaMaskQua,jdbcType=DOUBLE},
-      maxloop_smo = #{maxloopSmo,jdbcType=DOUBLE},
+      step_main = #{stepMain,jdbcType=DOUBLE},
+      step_sraf = #{stepSraf,jdbcType=DOUBLE},
+      omega_qua = #{omegaQua,jdbcType=DOUBLE},
+      maxloop_opc = #{maxloopOpc,jdbcType=DOUBLE},
       threshold = #{threshold,jdbcType=DOUBLE},
       tr = #{tr,jdbcType=DOUBLE},
       a_source = #{aSource,jdbcType=DOUBLE},
@@ -365,53 +341,30 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
-  <select id="selectByRecord" resultMap="BaseResultMap"  parameterType="bit.gd.pojo.GDParameterSmo" >
+  <select id="selectByRecord" resultMap="BaseResultMap" parameterType="bit.gd.pojo.GDParameterOpc" >
     select
     <include refid="Base_Column_List" />
-    from gd_parameter_smo
-    where
-    input_mask_hash = #{inputMaskHash,jdbcType=VARCHAR}
-    and
-    mask_dimension = #{maskDimension,jdbcType=DOUBLE}
-    and
-    pixel_size = #{pixelSize,jdbcType=DOUBLE}
-    and
-    reflect = #{reflect,jdbcType=DOUBLE}
-    and
-    absorb = #{absorb,jdbcType=DOUBLE}
-    and
-    shadow_near = #{shadowNear,jdbcType=DOUBLE}
-    and
-    shadow_far = #{shadowFar,jdbcType=DOUBLE}
-    and
-    wavelength = #{wavelength,jdbcType=DOUBLE}
-    and
-    sigma_in = #{sigmaIn,jdbcType=DOUBLE}
-    and
-    sigma_out = #{sigmaOut,jdbcType=DOUBLE}
-    and
-    tis = #{tis,jdbcType=DOUBLE}
-    and
-    na = #{na,jdbcType=DOUBLE}
-    and
-    ratio = #{ratio,jdbcType=DOUBLE}
-    and
-    step_source = #{stepSource,jdbcType=DOUBLE}
-    and
-    omega_source_qua = #{omegaSourceQua,jdbcType=DOUBLE}
-    and
-    step_mask_main = #{stepMaskMain,jdbcType=DOUBLE}
-    and
-    step_mask_sraf = #{stepMaskSraf,jdbcType=DOUBLE}
-    and
-    omega_mask_qua = #{omegaMaskQua,jdbcType=DOUBLE}
-    and
-    maxloop_smo = #{maxloopSmo,jdbcType=DOUBLE}
-    and
-    threshold = #{threshold,jdbcType=DOUBLE}
-    and
-    tr = #{tr,jdbcType=DOUBLE}
-    and
-    a_source = #{aSource,jdbcType=DOUBLE}
+    from gd_parameter_opc
+    where mask_dimension = #{maskDimension,jdbcType=DOUBLE}
+    and pixel_size = #{pixelSize,jdbcType=DOUBLE}
+    and reflect = #{reflect,jdbcType=DOUBLE}
+    and absorb = #{absorb,jdbcType=DOUBLE}
+    and shadow_near = #{shadowNear,jdbcType=DOUBLE}
+    and shadow_far = #{shadowFar,jdbcType=DOUBLE}
+    and wavelength = #{wavelength,jdbcType=DOUBLE}
+    and sigma_in = #{sigmaIn,jdbcType=DOUBLE}
+    and sigma_out = #{sigmaOut,jdbcType=DOUBLE}
+    and tis = #{tis,jdbcType=DOUBLE}
+    and na = #{na,jdbcType=DOUBLE}
+    and ratio = #{ratio,jdbcType=DOUBLE}
+    and step_main = #{stepMain,jdbcType=DOUBLE}
+    and step_sraf = #{stepSraf,jdbcType=DOUBLE}
+    and omega_qua = #{omegaQua,jdbcType=DOUBLE}
+    and maxloop_opc = #{maxloopOpc,jdbcType=DOUBLE}
+    and threshold = #{threshold,jdbcType=DOUBLE}
+    and tr = #{tr,jdbcType=DOUBLE}
+    and a_source = #{aSource,jdbcType=DOUBLE}
+    and core_num = #{coreNum,jdbcType=DOUBLE}
+    and input_mask_hash = #{inputMaskHash,jdbcType=VARCHAR}
   </select>
 </mapper>

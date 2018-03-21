@@ -40,14 +40,6 @@ public class FileManageController {
         String path = request.getSession().getServletContext().getRealPath("upload");
         FilenameAndHashVo filenameAndHashVo = iFileService.upload(file, path);
 
-        String targetFileName = filenameAndHashVo.getTargetFileName();
-        String url = PropertiesUtil.getProperty("ftp.server.http.prefix") + targetFileName;
-        String fileHash = filenameAndHashVo.getFileHash();
-
-        Map fileMap = Maps.newHashMap();
-        fileMap.put("uri", targetFileName);
-        fileMap.put("url", url);
-        fileMap.put("fileHash", fileHash);
-        return ServerResponse.createBySuccess(fileMap);
+        return ServerResponse.createBySuccess(filenameAndHashVo);
     }
 }

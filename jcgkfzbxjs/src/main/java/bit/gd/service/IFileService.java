@@ -12,4 +12,5 @@ public interface IFileService {
     FilenameAndHashVo upload(MultipartFile file, String path);
     String uploadMatlabOutputFile(String matlabOutputFilename, String matlabOutputPath, String ftpResultPath);
     boolean copySmoIntermediateResult(String userNo);
+    boolean copyOpcIntermediateResult(String userNo);
 }

@@ -7,6 +7,7 @@ import bit.gd.pojo.GDRole;
 import bit.gd.pojo.GDRunningState;
 import bit.gd.pojo.GDUser;
 import bit.gd.service.IFileService;
+import bit.gd.service.IRunningStateService;
 import bit.gd.service.IUserManageService;
 import bit.gd.util.JMatIOUtil;
 import bit.gd.util.PropertiesUtil;
@@ -38,6 +39,9 @@ public class UserManageController {
 
     @Autowired
     IFileService iFileService;
+
+    @Autowired
+    IRunningStateService iRunningStateService;
 
     @RequestMapping("add_user.do")
     @ResponseBody
@@ -282,21 +286,7 @@ public class UserManageController {
         if (subject.hasRole(moduleName) || subject.hasRole(Const.Role.ROLE_ADMIN)) {
             GDRunningState gdRunningState = iUserManageService.getUserModuleRunningState(userNo, moduleName);
             if (gdRunningState.getRunningStatus() == Const.RunningState.RUNNING) {
-                if (iFileService.copySmoIntermediateResult(userNo)) {
-                    SmoIntermediateFileVo smoIntermediateFileVo = new SmoIntermediateFileVo();
-                    double error = JMatIOUtil.getErrorMatValue( PropertiesUtil.getProperty("matlab.output.path")
-                            + userNo + File.separator + Const.SmoMatlabOutputFilename.SMO_Error_Mat);
-                    smoIntermediateFileVo.setError(error);
-
-                    double iterationCount = JMatIOUtil.getIterationCount(PropertiesUtil.getProperty("matlab.output.path")
-                            + userNo + File.separator + Const.SmoMatlabOutputFilename.SMO_Iteration_Times_Mat);
-                    smoIntermediateFileVo.setIterationCount(iterationCount);
-
-                    return ServerResponse.createBySuccessCodeMessage(ResponseCode.RUNNING.getCode(), "已有中间结果", smoIntermediateFileVo);
-                } else {
-                    return ServerResponse.createBySuccessCodeMessage(ResponseCode.RUNNING.getCode(), "暂无中间结果", gdRunningState);
-                }
-
+                return iRunningStateService.getIntermediateFile(moduleName, userNo, gdRunningState);
             } else {
                 return ServerResponse.createBySuccessCodeMessage(ResponseCode.IDLE.getCode(), "可提交新任务", gdRunningState);
             }

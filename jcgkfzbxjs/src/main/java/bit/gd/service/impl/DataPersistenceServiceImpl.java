@@ -1,11 +1,7 @@
 package bit.gd.service.impl;
 
-import bit.gd.dao.GDParameterSmoMapper;
-import bit.gd.dao.GDResultSmoMapper;
-import bit.gd.dao.GDSimulationRecordMapper;
-import bit.gd.pojo.GDParameterSmo;
-import bit.gd.pojo.GDResultSmo;
-import bit.gd.pojo.GDSimulationRecord;
+import bit.gd.dao.*;
+import bit.gd.pojo.*;
 import bit.gd.service.IDataPersistenceService;
 import bit.gd.vo.SimulatedVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +23,12 @@ public class DataPersistenceServiceImpl implements IDataPersistenceService {
     @Autowired
     GDSimulationRecordMapper gdSimulationRecordMapper;
 
+    @Autowired
+    GDParameterOpcMapper gdParameterOpcMapper;
+
+    @Autowired
+    GDResultOpcMapper gdResultOpcMapper;
+
     public GDParameterSmo storeSmoParameters(GDParameterSmo gdParameterSmo) {
         if (gdParameterSmoMapper.insert(gdParameterSmo) > 0) {
             return gdParameterSmo;
@@ -34,8 +36,15 @@ public class DataPersistenceServiceImpl implements IDataPersistenceService {
         return null;
     }
 
+    public GDParameterOpc storeOpcParameters(GDParameterOpc gdParameterOpc) {
+        if (gdParameterOpcMapper.insert(gdParameterOpc) > 0) {
+            return gdParameterOpc;
+        }
+        return null;
+    }
+
     public GDParameterSmo checkSmoParametersSimulated(GDParameterSmo gdParameterSmo) {
-        List<GDParameterSmo> gdParameterSmoList = gdParameterSmoMapper.selectIdByRecord(gdParameterSmo);
+        List<GDParameterSmo> gdParameterSmoList = gdParameterSmoMapper.selectByRecord(gdParameterSmo);
         if (gdParameterSmoList.isEmpty()) {
             return null;
         } else {
@@ -43,10 +52,27 @@ public class DataPersistenceServiceImpl implements IDataPersistenceService {
         }
     }
 
+    public GDParameterOpc checkOpcParametersSimulated(GDParameterOpc gdParameterOpc) {
+        List<GDParameterOpc> gdParameterOpcList = gdParameterOpcMapper.selectByRecord(gdParameterOpc);
+        if (gdParameterOpcList.isEmpty()) {
+            return null;
+        } else {
+            return gdParameterOpcList.get(gdParameterOpcList.size() - 1);
+        }
+    }
+
     public GDResultSmo storeSmoResult(GDResultSmo gdResultSmo) {
         if (gdResultSmoMapper.insert(gdResultSmo) > 0) {
             return gdResultSmo;
         }
+        return null;
+    }
+
+    public GDResultOpc storeOpcResult(GDResultOpc gdResultOpc) {
+        if (gdResultOpcMapper.insert(gdResultOpc) > 0) {
+            return gdResultOpc;
+        }
+
         return null;
     }
 
@@ -68,7 +94,6 @@ public class DataPersistenceServiceImpl implements IDataPersistenceService {
         } else {
             return null;
         }
-
 
         return simulatedVo;
     }

@@ -3,12 +3,8 @@ package bit.gd.service.impl;
 import bit.gd.common.Const;
 import bit.gd.common.ResponseCode;
 import bit.gd.common.ServerResponse;
-import bit.gd.dao.GDParameterSmoMapper;
-import bit.gd.dao.GDResultSmoMapper;
-import bit.gd.dao.GDRunningStateMapper;
-import bit.gd.pojo.GDParameterSmo;
-import bit.gd.pojo.GDResultSmo;
-import bit.gd.pojo.GDSimulationRecord;
+import bit.gd.dao.*;
+import bit.gd.pojo.*;
 import bit.gd.service.IConnectMatlabService;
 import bit.gd.service.IDataPersistenceService;
 import bit.gd.service.IFileService;
@@ -32,7 +28,8 @@ import java.util.Date;
 public class ConnectMatlabServiceImpl implements IConnectMatlabService {
     private static final Logger LOGGER = LoggerFactory.getLogger(IConnectMatlabService.class);
 
-    private static final String matlabOutputPath = PropertiesUtil.getProperty("matlab.output.path");
+    private static final String smoOutputPath = PropertiesUtil.getProperty("matlab.output.path.smo");
+    private static final String opcOutputPath = PropertiesUtil.getProperty("matlab.output.path.opc");
 
     @Autowired
     IDataPersistenceService iDataPersistenceService;
@@ -49,12 +46,18 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
     @Autowired
     GDRunningStateMapper gdRunningStateMapper;
 
+    @Autowired
+    GDParameterOpcMapper gdParameterOpcMapper;
+
+    @Autowired
+    GDResultOpcMapper gdResultOpcMapper;
+
     public ServerResponse executeSmoSimulation(GDParameterSmo gdParameterSmo) {
         Subject subject = SecurityUtils.getSubject();
         String userNo = (String) subject.getPrincipal();
         gdRunningStateMapper.updateByUserNoAndModuleName(userNo, Const.Module.MODULE_SMO, Const.RunningState.RUNNING);
 
-        File outputDir = new File(matlabOutputPath + userNo);
+        File outputDir = new File(smoOutputPath + userNo);
         if (!outputDir.exists()) {
             outputDir.mkdirs();
         }
@@ -84,49 +87,6 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
             }
         }
 
-//        Struct maskPa = new Struct("N", gdParameterSmo.getMaskDimension(),
-//                "Pixel", gdParameterSmo.getPixelSize(), "reflect", gdParameterSmo.getReflect(),
-//                "absorb", gdParameterSmo.getAbsorb(), "b_max_near_shadowing", gdParameterSmo.getShadowNear(),
-//                "b_max_far_shadowing", gdParameterSmo.getShadowFar());
-//
-//        try {
-//            Smo smonew = new Smo();
-//            smonew.EUV_Pixelated_SMO_MAIN(4, maskPa, gdParameterSmo.getWavelength(),
-//                    gdParameterSmo.getSigmaIn(), gdParameterSmo.getSigmaOut(), gdParameterSmo.getTis(),
-//                    gdParameterSmo.getNa(), gdParameterSmo.getRatio(), gdParameterSmo.getStepSource(),
-//                    gdParameterSmo.getOmegaSourceQua(), gdParameterSmo.getStepMaskMain(), gdParameterSmo.getStepMaskSraf(),
-//                    gdParameterSmo.getOmegaMaskQua(), gdParameterSmo.getMaxloopSmo(), gdParameterSmo.getThreshold(),
-//                    gdParameterSmo.getTr(), gdParameterSmo.getaSource(),
-//                    PropertiesUtil.getProperty("ftp.server.path") + Const.UPLOAD_FILE_PATH + File.separator + gdParameterSmo.getInputMask());
-//        } catch (MWException e) {
-//            e.printStackTrace();
-//            gdParameterSmoMapper.deleteByPrimaryKey(gdParameterSmo.getId());
-//            gdRunningStateMapper.updateByUserNoAndModuleName(userNo, Const.Module.MODULE_SMO, Const.RunningState.IDLE);
-//            return ServerResponse.createByErrorMessage("仿真失败");
-//        }
-//
-//        try {
-//
-//            smo.EUV_Pixelated_SMO_MAIN(4, gdParameterSmo.getCoreNum(), gdParameterSmo.getMaskDimension(),
-//                    gdParameterSmo.getPixelSize(), gdParameterSmo.getReflect(), gdParameterSmo.getAbsorb(),
-//                    gdParameterSmo.getShadowNear(), gdParameterSmo.getShadowFar(), gdParameterSmo.getWavelength(),
-//                    gdParameterSmo.getSigmaIn(), gdParameterSmo.getSigmaOut(), gdParameterSmo.getTis(),
-//                    gdParameterSmo.getNa(), gdParameterSmo.getRatio(), gdParameterSmo.getStepSource(),
-//                    gdParameterSmo.getOmegaSourceQua(), gdParameterSmo.getStepMaskMain(), gdParameterSmo.getStepMaskSraf(),
-//                    gdParameterSmo.getOmegaMaskQua(), gdParameterSmo.getMaxloopSmo(), gdParameterSmo.getThreshold(),
-//                    gdParameterSmo.getTr(), gdParameterSmo.getaSource(),
-//                    PropertiesUtil.getProperty("ftp.server.path") + Const.UPLOAD_FILE_PATH + File.separator + gdParameterSmo.getInputMask());
-//        } catch (MWException e) {
-//            e.printStackTrace();
-//            gdParameterSmoMapper.deleteByPrimaryKey(gdParameterSmo.getId());
-//            gdRunningStateMapper.updateByUserNoAndModuleName(userNo, Const.Module.MODULE_SMO, Const.RunningState.IDLE);
-//            return ServerResponse.createByErrorMessage("仿真失败");
-//        } finally {
-//            if (smo != null) {
-//                smo.dispose();
-//            }
-//        }
-
         Date endTime = new Date();
 
         LOGGER.info("存储仿真结果...");
@@ -144,7 +104,7 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
         LOGGER.info("存入历史记录...");
         GDSimulationRecord gdSimulationRecord = new GDSimulationRecord();
 
-        gdSimulationRecord.setUserNo((String) subject.getPrincipal());
+        gdSimulationRecord.setUserNo(userNo);
         gdSimulationRecord.setModuleName(Const.Module.MODULE_SMO);
         gdSimulationRecord.setParametersId(gdParameterSmo.getId());
         gdSimulationRecord.setResultId(gdResultSmo.getId());
@@ -163,7 +123,7 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
     }
 
     private GDResultSmo fillGDResultSmoFilepath(GDResultSmo gdResultSmo) {
-        String sourcePath = matlabOutputPath + gdResultSmo.getUserNo() + File.separator;
+        String sourcePath = smoOutputPath + gdResultSmo.getUserNo() + File.separator;
         gdResultSmo.setErrorMat(iFileService
                 .uploadMatlabOutputFile(Const.SmoMatlabOutputFilename.SMO_Error_Mat, sourcePath, Const.RESULT_PATH_SMO));
         gdResultSmo.setErrorConvergencePng(iFileService
@@ -186,5 +146,85 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
                 .uploadMatlabOutputFile(Const.SmoMatlabOutputFilename.SMO_Source_Pattern_Png, sourcePath, Const.RESULT_PATH_SMO));
 
         return gdResultSmo;
+    }
+
+
+    public ServerResponse executeOpcSimulation(GDParameterOpc gdParameterOpc) {
+        Subject subject = SecurityUtils.getSubject();
+        String userNo = (String) subject.getPrincipal();
+        gdRunningStateMapper.updateByUserNoAndModuleName(userNo, Const.Module.MODULE_OPC, Const.RunningState.RUNNING);
+
+        File outputDir = new File(opcOutputPath + userNo);
+        if (!outputDir.exists()) {
+            outputDir.mkdirs();
+        }
+        Date startTime = new Date();
+
+        //TODO   opc模块matlab函数调用
+        try {
+            Thread.sleep(20000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Date endTime = new Date();
+
+        LOGGER.info("存储仿真结果...");
+        GDResultOpc gdResultOpc = new GDResultOpc();
+        gdResultOpc.setParametersId(gdParameterOpc.getId());
+        gdResultOpc.setUserNo(userNo);
+        gdResultOpc = fillGDResultOpcFilepath(gdResultOpc);
+
+        if (iDataPersistenceService.storeOpcResult(gdResultOpc) == null) {
+            gdParameterOpcMapper.deleteByPrimaryKey(gdParameterOpc.getId());
+            gdRunningStateMapper.updateByUserNoAndModuleName(userNo, Const.Module.MODULE_OPC, Const.RunningState.IDLE);
+            return ServerResponse.createByErrorMessage("仿真结果存储失败");
+        }
+
+        LOGGER.info("存入历史记录...");
+        GDSimulationRecord gdSimulationRecord = new GDSimulationRecord();
+
+        gdSimulationRecord.setUserNo(userNo);
+        gdSimulationRecord.setModuleName(Const.Module.MODULE_OPC);
+        gdSimulationRecord.setParametersId(gdParameterOpc.getId());
+        gdSimulationRecord.setResultId(gdResultOpc.getId());
+        gdSimulationRecord.setStartTime(startTime);
+        gdSimulationRecord.setEndTime(endTime);
+
+        if (iDataPersistenceService.storeSimulationRecord(gdSimulationRecord) == null) {
+            gdParameterOpcMapper.deleteByPrimaryKey(gdParameterOpc.getId());
+            gdResultOpcMapper.deleteByPrimaryKey(gdResultOpc.getId());
+            gdRunningStateMapper.updateByUserNoAndModuleName(userNo, Const.Module.MODULE_OPC, Const.RunningState.IDLE);
+            return ServerResponse.createByErrorMessage("仿真记录存储失败");
+        }
+
+        gdRunningStateMapper.executeSuccessResetAndPlus(userNo, Const.Module.MODULE_OPC, Const.RunningState.IDLE);
+        return ServerResponse.createBySuccessCodeMessage(ResponseCode.FINISHED.getCode(), "仿真成功", gdResultOpc);
+    }
+
+    private GDResultOpc fillGDResultOpcFilepath(GDResultOpc gdResultOpc) {
+        String sourcePath = opcOutputPath + gdResultOpc.getUserNo() + File.separator;
+        gdResultOpc.setErrorMat(iFileService
+                .uploadMatlabOutputFile(Const.OpcMatlabOutputFilename.OPC_Error_Mat, sourcePath, Const.RESULT_PATH_OPC));
+        gdResultOpc.setErrorConvergencePng(iFileService
+                .uploadMatlabOutputFile(Const.OpcMatlabOutputFilename.OPC_Error_Convergence_Png, sourcePath, Const.RESULT_PATH_OPC));
+        gdResultOpc.setErrorConvergenceWeightPng(iFileService
+                .uploadMatlabOutputFile(Const.OpcMatlabOutputFilename.OPC_Error_Convergence_Weight_Png, sourcePath, Const.RESULT_PATH_OPC));
+        gdResultOpc.setErrorWeightMat(iFileService
+                .uploadMatlabOutputFile(Const.OpcMatlabOutputFilename.OPC_Error_Weight_Mat, sourcePath, Const.RESULT_PATH_OPC));
+        gdResultOpc.setMaskPatternPng(iFileService
+                .uploadMatlabOutputFile(Const.OpcMatlabOutputFilename.OPC_Mask_Pattern_Png, sourcePath, Const.RESULT_PATH_OPC));
+        gdResultOpc.setMaskPatternMat(iFileService
+                .uploadMatlabOutputFile(Const.OpcMatlabOutputFilename.OPC_Mask_Pattern_Mat, sourcePath, Const.RESULT_PATH_OPC));
+        gdResultOpc.setPrintImageMat(iFileService
+                .uploadMatlabOutputFile(Const.OpcMatlabOutputFilename.OPC_Print_Image_Mat, sourcePath, Const.RESULT_PATH_OPC));
+        gdResultOpc.setPrintImagePng(iFileService
+                .uploadMatlabOutputFile(Const.OpcMatlabOutputFilename.OPC_Print_Image_Png, sourcePath, Const.RESULT_PATH_OPC));
+        gdResultOpc.setSourcePatternMat(iFileService
+                .uploadMatlabOutputFile(Const.OpcMatlabOutputFilename.OPC_Source_Pattern_Mat, sourcePath, Const.RESULT_PATH_OPC));
+        gdResultOpc.setSourcePatternPng(iFileService
+                .uploadMatlabOutputFile(Const.OpcMatlabOutputFilename.OPC_Source_Pattern_Png, sourcePath, Const.RESULT_PATH_OPC));
+
+        return gdResultOpc;
     }
 }

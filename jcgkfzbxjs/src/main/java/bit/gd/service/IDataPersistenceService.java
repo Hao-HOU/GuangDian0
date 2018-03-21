@@ -1,8 +1,6 @@
 package bit.gd.service;
 
-import bit.gd.pojo.GDParameterSmo;
-import bit.gd.pojo.GDResultSmo;
-import bit.gd.pojo.GDSimulationRecord;
+import bit.gd.pojo.*;
 import bit.gd.vo.SimulatedVo;
 
 /**
@@ -10,8 +8,11 @@ import bit.gd.vo.SimulatedVo;
  */
 public interface IDataPersistenceService {
     GDParameterSmo storeSmoParameters(GDParameterSmo gdParameterSmo);
+    GDParameterOpc storeOpcParameters(GDParameterOpc gdParameterOpc);
     GDParameterSmo checkSmoParametersSimulated(GDParameterSmo gdParameterSmo);
+    GDParameterOpc checkOpcParametersSimulated(GDParameterOpc gdParameterOpc);
     GDResultSmo storeSmoResult(GDResultSmo gdResultSmo);
+    GDResultOpc storeOpcResult(GDResultOpc gdResultOpc);
     GDSimulationRecord storeSimulationRecord(GDSimulationRecord gdSimulationRecord);
     SimulatedVo getSimulatedVo(String moduleName, int parametersId);
 }

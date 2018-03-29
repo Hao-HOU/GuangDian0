@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import smpwo.Pwo;
 import syyopc.Opc;
 import syysmo.Smo;
 
@@ -31,6 +32,7 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
 
     private static final String smoOutputPath = PropertiesUtil.getProperty("matlab.output.path.smo");
     private static final String opcOutputPath = PropertiesUtil.getProperty("matlab.output.path.opc");
+    private static final String pwoOutputPath = PropertiesUtil.getProperty("matlab.output.path.pwo");
 
     @Autowired
     IDataPersistenceService iDataPersistenceService;
@@ -52,6 +54,9 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
 
     @Autowired
     GDResultOpcMapper gdResultOpcMapper;
+
+    @Autowired
+    GDParameterPwoMapper gdParameterPwoMapper;
 
     public ServerResponse executeSmoSimulation(GDParameterSmo gdParameterSmo) {
         Subject subject = SecurityUtils.getSubject();
@@ -251,5 +256,103 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
                 .uploadMatlabOutputFile(Const.OpcMatlabOutputFilename.OPC_Source_Pattern_Png, sourcePath, Const.RESULT_PATH_OPC));
 
         return gdResultOpc;
+    }
+
+    public ServerResponse executePwoSimulation(GDParameterPwo gdParameterPwo) {
+        Subject subject = SecurityUtils.getSubject();
+        String userNo = (String) subject.getPrincipal();
+        gdRunningStateMapper.updateByUserNoAndModuleName(userNo, Const.Module.MODULE_SMPWO, Const.RunningState.RUNNING);
+
+        File outputDir = new File(pwoOutputPath + userNo);
+        if (!outputDir.exists()) {
+            outputDir.mkdirs();
+        }
+        Date startTime = new Date();
+
+        Pwo pwo = null;
+        try {
+            pwo = new Pwo();
+            pwo.SMPWO_main(3, gdParameterPwo.getCoreNum(), gdParameterPwo.getWavelength(), gdParameterPwo.getNa(),
+                    gdParameterPwo.getRatio(), gdParameterPwo.getPolarization(), gdParameterPwo.getRefractiveIndex(),
+                    gdParameterPwo.getPixel(), gdParameterPwo.getStepPupil(), gdParameterPwo.getOmegaPupil(),
+                    gdParameterPwo.getZterm(), gdParameterPwo.getResistSlope(), gdParameterPwo.getThreshold(),
+                    gdParameterPwo.getDimension(), gdParameterPwo.getMaxloop(),
+                    PropertiesUtil.getProperty("ftp.server.path") + Const.UPLOAD_FILE_PATH + File.separator + gdParameterPwo.getInputData(),
+                    outputDir + File.separator);
+
+        } catch (MWException e) {
+            e.printStackTrace();
+            gdParameterPwoMapper.deleteByPrimaryKey(gdParameterPwo.getId());
+            gdRunningStateMapper.updateByUserNoAndModuleName(userNo, Const.Module.MODULE_SMPWO, Const.RunningState.IDLE);
+            return ServerResponse.createByErrorMessage("仿真失败");
+        } finally {
+            try {
+                pwo.closepool();
+            } catch (MWException e) {
+                e.printStackTrace();
+            }
+            pwo.dispose();
+        }
+
+        Date endTime = new Date();
+
+        LOGGER.info("存储仿真结果...");
+        GDResultPwo gdResultPwo = new GDResultPwo();
+        gdResultPwo.setParametersId(gdParameterPwo.getId());
+        gdResultPwo.setUserNo(userNo);
+        gdResultPwo = fillGDResultPwoFilepath(gdResultPwo);
+
+        if (iDataPersistenceService.storePwoResult(gdResultPwo) == null) {
+            gdParameterPwoMapper.deleteByPrimaryKey(gdParameterPwo.getId());
+            gdRunningStateMapper.updateByUserNoAndModuleName(userNo, Const.Module.MODULE_SMPWO, Const.RunningState.IDLE);
+            return ServerResponse.createByErrorMessage("仿真结果存储失败");
+        }
+
+        LOGGER.info("存入历史记录...");
+        GDSimulationRecord gdSimulationRecord = new GDSimulationRecord();
+
+        gdSimulationRecord.setUserNo(userNo);
+        gdSimulationRecord.setModuleName(Const.Module.MODULE_SMPWO);
+        gdSimulationRecord.setParametersId(gdParameterPwo.getId());
+        gdSimulationRecord.setResultId(gdResultPwo.getId());
+        gdSimulationRecord.setStartTime(startTime);
+        gdSimulationRecord.setEndTime(endTime);
+
+        if (iDataPersistenceService.storeSimulationRecord(gdSimulationRecord) == null) {
+            gdParameterOpcMapper.deleteByPrimaryKey(gdParameterPwo.getId());
+            gdResultOpcMapper.deleteByPrimaryKey(gdResultPwo.getId());
+            gdRunningStateMapper.updateByUserNoAndModuleName(userNo, Const.Module.MODULE_SMPWO, Const.RunningState.IDLE);
+            return ServerResponse.createByErrorMessage("仿真记录存储失败");
+        }
+
+        gdRunningStateMapper.executeSuccessResetAndPlus(userNo, Const.Module.MODULE_SMPWO, Const.RunningState.IDLE);
+        return ServerResponse.createBySuccessCodeMessage(ResponseCode.FINISHED.getCode(), "仿真成功", gdResultPwo);
+
+    }
+
+    private GDResultPwo fillGDResultPwoFilepath(GDResultPwo gdResultPwo) {
+        String sourcePath = opcOutputPath + gdResultPwo.getUserNo() + File.separator;
+        gdResultPwo.setErrorMat(iFileService
+                .uploadMatlabOutputFile(Const.PwoMatlabOutputFilename.PWO_Error_Mat, sourcePath, Const.RESULT_PATH_PWO));
+        gdResultPwo.setErrorConvergencePupilPng(iFileService
+                .uploadMatlabOutputFile(Const.PwoMatlabOutputFilename.PWO_Error_Convergence_Pupil_Png, sourcePath, Const.RESULT_PATH_PWO));
+        gdResultPwo.setMaskPatternMat(iFileService
+                .uploadMatlabOutputFile(Const.PwoMatlabOutputFilename.PWO_Mask_Pattern_Mat, sourcePath, Const.RESULT_PATH_PWO));
+        gdResultPwo.setMaskPatternPng(iFileService
+                .uploadMatlabOutputFile(Const.PwoMatlabOutputFilename.PWO_Mask_Pattern_Png, sourcePath, Const.RESULT_PATH_PWO));
+        gdResultPwo.setPrintImagePng(iFileService
+                .uploadMatlabOutputFile(Const.PwoMatlabOutputFilename.PWO_Print_Image_Png, sourcePath, Const.RESULT_PATH_PWO));
+        gdResultPwo.setSourcePatternMat(iFileService
+                .uploadMatlabOutputFile(Const.PwoMatlabOutputFilename.PWO_Source_Pattern_Mat, sourcePath, Const.RESULT_PATH_PWO));
+        gdResultPwo.setSourcePatternPng(iFileService
+                .uploadMatlabOutputFile(Const.PwoMatlabOutputFilename.PWO_Source_Pattern_Png, sourcePath, Const.RESULT_PATH_PWO));
+        gdResultPwo.setTargetPatternMat(iFileService
+                .uploadMatlabOutputFile(Const.PwoMatlabOutputFilename.PWO_Target_Pattern_Mat, sourcePath, Const.RESULT_PATH_PWO));
+        gdResultPwo.setTargetPatternPng(iFileService
+                .uploadMatlabOutputFile(Const.PwoMatlabOutputFilename.PWO_Target_Pattern_Png, sourcePath, Const.RESULT_PATH_PWO));
+        gdResultPwo.setTheitaPupilPng(iFileService
+                .uploadMatlabOutputFile(Const.PwoMatlabOutputFilename.PWO_Theita_Pupil_Png, sourcePath, Const.RESULT_PATH_PWO));
+
+        return gdResultPwo;
     }
 }

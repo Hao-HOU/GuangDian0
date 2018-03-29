@@ -55,4 +55,32 @@ public class JMatIOUtil {
 
         return matrix[0][0];
     }
+
+    public static double getPwoErrorMatValue(String matFilePath) {
+        MatFileReader reader = null;
+        try {
+            reader = new MatFileReader(matFilePath);
+        } catch (IOException e) {
+            LOGGER.info("读取.mat文件中的值失败");
+        }
+        MLArray mlArray = reader.getMLArray("error_pupil");
+        MLDouble mlDouble = (MLDouble) mlArray;
+        double[][] matrix = (mlDouble.getArray());
+
+        return matrix[0][0];
+    }
+
+    public static double getPwoIterationCount(String matFilePath) {
+        MatFileReader reader = null;
+        try {
+            reader = new MatFileReader(matFilePath);
+        } catch (IOException e) {
+            LOGGER.info("读取.mat文件中的值失败");
+        }
+        MLArray mlArray = reader.getMLArray("count_pupil");
+        MLDouble mlDouble = (MLDouble) mlArray;
+        double[][] matrix = (mlDouble.getArray());
+
+        return matrix[0][0];
+    }
 }

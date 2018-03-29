@@ -9,10 +9,13 @@ import bit.gd.vo.SimulatedVo;
 public interface IDataPersistenceService {
     GDParameterSmo storeSmoParameters(GDParameterSmo gdParameterSmo);
     GDParameterOpc storeOpcParameters(GDParameterOpc gdParameterOpc);
+    GDParameterPwo storePwoParameters(GDParameterPwo gdParameterPwo);
     GDParameterSmo checkSmoParametersSimulated(GDParameterSmo gdParameterSmo);
     GDParameterOpc checkOpcParametersSimulated(GDParameterOpc gdParameterOpc);
+    GDParameterPwo checkPwoParametersSimulated(GDParameterPwo gdParameterPwo);
     GDResultSmo storeSmoResult(GDResultSmo gdResultSmo);
     GDResultOpc storeOpcResult(GDResultOpc gdResultOpc);
+    GDResultPwo storePwoResult(GDResultPwo gdResultPwo);
     GDSimulationRecord storeSimulationRecord(GDSimulationRecord gdSimulationRecord);
     SimulatedVo getSimulatedVo(String moduleName, int parametersId);
 }

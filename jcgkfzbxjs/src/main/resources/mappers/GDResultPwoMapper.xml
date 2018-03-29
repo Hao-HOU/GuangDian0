@@ -34,7 +34,7 @@
     delete from gd_result_pwo
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="bit.gd.pojo.GDResultPwo" >
+  <insert id="insert" parameterType="bit.gd.pojo.GDResultPwo" useGeneratedKeys="true" keyProperty="id" >
     insert into gd_result_pwo (id, parameters_id, user_no, 
       error_mat, error_convergence_pupil_png, mask_pattern_mat, 
       mask_pattern_png, print_image_png, source_pattern_mat, 

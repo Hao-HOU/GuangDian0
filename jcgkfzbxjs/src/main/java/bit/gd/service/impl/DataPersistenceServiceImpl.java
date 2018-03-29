@@ -29,6 +29,12 @@ public class DataPersistenceServiceImpl implements IDataPersistenceService {
     @Autowired
     GDResultOpcMapper gdResultOpcMapper;
 
+    @Autowired
+    GDParameterPwoMapper gdParameterPwoMapper;
+
+    @Autowired
+    GDResultPwoMapper gdResultPwoMapper;
+
     public GDParameterSmo storeSmoParameters(GDParameterSmo gdParameterSmo) {
         if (gdParameterSmoMapper.insert(gdParameterSmo) > 0) {
             return gdParameterSmo;
@@ -40,6 +46,14 @@ public class DataPersistenceServiceImpl implements IDataPersistenceService {
         if (gdParameterOpcMapper.insert(gdParameterOpc) > 0) {
             return gdParameterOpc;
         }
+        return null;
+    }
+
+    public GDParameterPwo storePwoParameters(GDParameterPwo gdParameterPwo) {
+        if (gdParameterPwoMapper.insert(gdParameterPwo) > 0) {
+            return gdParameterPwo;
+        }
+
         return null;
     }
 
@@ -61,6 +75,15 @@ public class DataPersistenceServiceImpl implements IDataPersistenceService {
         }
     }
 
+    public GDParameterPwo checkPwoParametersSimulated(GDParameterPwo gdParameterPwo) {
+        List<GDParameterPwo> gdParameterPwoList = gdParameterPwoMapper.selectByRecord(gdParameterPwo);
+        if (gdParameterPwoList.isEmpty()) {
+            return null;
+        } else {
+            return gdParameterPwoList.get(gdParameterPwoList.size() - 1);
+        }
+    }
+
     public GDResultSmo storeSmoResult(GDResultSmo gdResultSmo) {
         if (gdResultSmoMapper.insert(gdResultSmo) > 0) {
             return gdResultSmo;
@@ -71,6 +94,14 @@ public class DataPersistenceServiceImpl implements IDataPersistenceService {
     public GDResultOpc storeOpcResult(GDResultOpc gdResultOpc) {
         if (gdResultOpcMapper.insert(gdResultOpc) > 0) {
             return gdResultOpc;
+        }
+
+        return null;
+    }
+
+    public GDResultPwo storePwoResult(GDResultPwo gdResultPwo) {
+        if (gdResultPwoMapper.insert(gdResultPwo) > 0) {
+            return gdResultPwo;
         }
 
         return null;

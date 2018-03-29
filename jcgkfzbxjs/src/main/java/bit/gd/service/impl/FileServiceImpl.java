@@ -141,6 +141,28 @@ public class FileServiceImpl implements IFileService {
         return true;
     }
 
+    public boolean copyPwoIntermediateResult(String userNo) {
+        List<String> pngFiles = Lists.newArrayList();
+        pngFiles.add(Const.PwoMatlabOutputFilename.PWO_Mask_Pattern_Png);
+        pngFiles.add(Const.PwoMatlabOutputFilename.PWO_Print_Image_Png);
+        pngFiles.add(Const.PwoMatlabOutputFilename.PWO_Source_Pattern_Png);
+        pngFiles.add(Const.PwoMatlabOutputFilename.PWO_Target_Pattern_Png);
+        pngFiles.add(Const.PwoMatlabOutputFilename.PWO_Theita_Pupil_Png);
+
+        String opcOutputPath = PropertiesUtil.getProperty("matlab.output.path.pwo");
+        String intermediateFilePath = System.getProperty("bit.gd") + Const.INTER_FILE_PATH + File.separator;
+
+        for (String png : pngFiles) {
+            String oldPath = opcOutputPath + userNo + File.separator + png;
+            String newPath = intermediateFilePath + userNo + File.separator + png;
+            if (!copyIntermediateResultPNG(oldPath, newPath)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private boolean copyIntermediateResultPNG(String oldPath, String newPath) {
         File source = new File(oldPath);
         File dest = new File(newPath);

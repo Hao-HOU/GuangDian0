@@ -13,4 +13,5 @@ public interface IFileService {
     String uploadMatlabOutputFile(String matlabOutputFilename, String matlabOutputPath, String ftpResultPath);
     boolean copySmoIntermediateResult(String userNo);
     boolean copyOpcIntermediateResult(String userNo);
+    boolean copyPwoIntermediateResult(String userNo);
 }

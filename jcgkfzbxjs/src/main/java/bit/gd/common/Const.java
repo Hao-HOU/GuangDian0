@@ -15,6 +15,7 @@ public class Const {
     public static final String UPLOAD_FILE_PATH = "upload";
     public static final String RESULT_PATH_SMO = "smo";
     public static final String RESULT_PATH_OPC = "opc";
+    public static final String RESULT_PATH_PWO = "pwo";
     public static final String INTER_FILE_PATH = "inter";
 
     public interface Role {
@@ -59,6 +60,20 @@ public class Const {
         String OPC_Print_Image_Png = "print_image.png";
         String OPC_Source_Pattern_Mat = "source_pattern.mat";
         String OPC_Source_Pattern_Png = "source_pattern.png";
+    }
+
+    public interface PwoMatlabOutputFilename {
+        String PWO_Error_Mat = "error.mat";
+        String PWO_Error_Convergence_Pupil_Png = "error_convergence_pupil.png";
+        String PWO_Iteration_Count_Mat = "iteration_count.mat";
+        String PWO_Mask_Pattern_Mat = "mask_pattern.mat";
+        String PWO_Mask_Pattern_Png = "mask_pattern.png";
+        String PWO_Print_Image_Png = "print_image.png";
+        String PWO_Source_Pattern_Mat = "source_pattern.mat";
+        String PWO_Source_Pattern_Png = "source_pattern.png";
+        String PWO_Target_Pattern_Mat = "target_pattern.mat";
+        String PWO_Target_Pattern_Png = "target_pattern.png";
+        String PWO_Theita_Pupil_Png = "theita_pupil.png";
     }
 
     public interface Status {

@@ -40,7 +40,7 @@
     delete from gd_parameter_pwo
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="bit.gd.pojo.GDParameterPwo" >
+  <insert id="insert" parameterType="bit.gd.pojo.GDParameterPwo" useGeneratedKeys="true" keyProperty="id">
     insert into gd_parameter_pwo (id, user_no, wavelength, 
       na, ratio, polarization, 
       refractive_index, pixel, step_pupil, 
@@ -54,7 +54,7 @@
       #{omegaPupil,jdbcType=DOUBLE}, #{zterm,jdbcType=DOUBLE}, #{resistSlope,jdbcType=DOUBLE}, 
       #{threshold,jdbcType=DOUBLE}, #{dimension,jdbcType=DOUBLE}, #{maxloop,jdbcType=DOUBLE}, 
       #{coreNum,jdbcType=DOUBLE}, #{inputData,jdbcType=VARCHAR}, #{inputDataHash,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+      now(), now())
   </insert>
   <insert id="insertSelective" parameterType="bit.gd.pojo.GDParameterPwo" >
     insert into gd_parameter_pwo
@@ -269,4 +269,32 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectByRecord" resultMap="BaseResultMap" parameterType="bit.gd.pojo.GDParameterPwo" >
+    select
+    <include refid="Base_Column_List" />
+    from gd_parameter_pwo
+    where wavelength = #{wavelength,jdbcType=DOUBLE}
+    and na = #{na,jdbcType=DOUBLE}
+    and ratio = #{ratio,jdbcType=DOUBLE}
+    and polarization = #{polarization,jdbcType=DOUBLE}
+    and refractive_index = #{refractiveIndex,jdbcType=DOUBLE}
+    and pixel = #{pixel,jdbcType=DOUBLE}
+    and step_pupil = #{stepPupil,jdbcType=DOUBLE}
+    and omega_pupil = #{omegaPupil,jdbcType=DOUBLE}
+    and zterm = #{zterm,jdbcType=DOUBLE}
+    and resist_slope = #{resistSlope,jdbcType=DOUBLE}
+    and threshold = #{threshold,jdbcType=DOUBLE}
+    and dimension = #{dimension,jdbcType=DOUBLE}
+    and maxloop = #{maxloop,jdbcType=DOUBLE}
+    and core_num = #{coreNum,jdbcType=DOUBLE}
+    and input_data_hash = #{inputDataHash,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectMaxloop" resultType="java.lang.Double" parameterType="java.lang.String" >
+    SELECT maxloop FROM gd_parameter_pwo
+    where user_no = #{userNo,jdbcType=VARCHAR}
+    ORDER BY id DESC
+    LIMIT 1
+  </select>
 </mapper>

@@ -2,6 +2,7 @@ package bit.gd.service;
 
 import bit.gd.common.ServerResponse;
 import bit.gd.pojo.GDParameterOpc;
+import bit.gd.pojo.GDParameterPwo;
 import bit.gd.pojo.GDParameterSmo;
 
 /**
@@ -10,4 +11,5 @@ import bit.gd.pojo.GDParameterSmo;
 public interface IConnectMatlabService {
     ServerResponse executeSmoSimulation(GDParameterSmo gdParameterSmo);
     ServerResponse executeOpcSimulation(GDParameterOpc gdParameterOpc);
+    ServerResponse executePwoSimulation(GDParameterPwo gdParameterPwo);
 }

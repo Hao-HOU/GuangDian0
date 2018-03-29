@@ -67,6 +67,7 @@ public class FileServiceImpl implements IFileService {
                 LOGGER.info("文件Hash值计算失败");
             } else {
                 filenameAndHashVo.setFileHash(FileMD5Util.getMD5Checksum(inputStream));
+                LOGGER.info("计算出的文件Hash值为：" + filenameAndHashVo.getFileHash());
             }
 
         } catch (Exception e) {

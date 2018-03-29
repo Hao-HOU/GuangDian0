@@ -1,3 +1,7 @@
+import bit.gd.common.Const;
+import bit.gd.util.FTPUtil;
+import bit.gd.util.FileMD5Util;
+
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -8,7 +12,19 @@ import java.security.MessageDigest;
 public class AnotherMD5Test {
     public static void main(String args[]) {
         try {
-            System.out.println(getMD5Checksum("E:\\ztest\\target4.mat"));
+            InputStream inputStream = FTPUtil.getFile(Const.UPLOAD_FILE_PATH, "2b5756ec-ca8a-4438-9e5c-d7e63b5592a4-pwo.mat");
+            if (inputStream == null) {
+
+            } else {
+                System.out.println(FileMD5Util.getMD5Checksum(inputStream));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            System.out.println(getMD5Checksum("E:\\ztest\\FTPServer\\upload\\2b5756ec-ca8a-4438-9e5c-d7e63b5592a4-pwo.mat"));
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -35,11 +51,11 @@ public class AnotherMD5Test {
 
     public static String getMD5Checksum(String filename) throws Exception {
         byte[] b = createChecksum(filename);
-        String result = "";
+       StringBuilder sb = new StringBuilder();
 
         for (int i=0; i < b.length; i++) {
-            result += Integer.toString( ( b[i] & 0xff ) + 0x100, 16).substring(1);//加0x100是因为有的b[i]的十六进制只有1位
+            sb.append(Integer.toString( ( b[i] & 0xff ) + 0x100, 16).substring(1));//加0x100是因为有的b[i]的十六进制只有1位
         }
-        return result;
+        return sb.toString();
     }
 }

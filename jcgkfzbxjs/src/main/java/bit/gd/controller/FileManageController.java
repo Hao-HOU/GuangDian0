@@ -1,5 +1,6 @@
 package bit.gd.controller;
 
+import bit.gd.common.Const;
 import bit.gd.common.ServerResponse;
 import bit.gd.service.IFileService;
 import bit.gd.util.FileMD5Util;
@@ -37,7 +38,7 @@ public class FileManageController {
     public ServerResponse upload(@RequestParam(value = "file", required = false) MultipartFile file,
                                  HttpServletRequest request) throws IOException {
         //填充业务
-        String path = request.getSession().getServletContext().getRealPath("upload");
+        String path = request.getSession().getServletContext().getRealPath(Const.UPLOAD_FILE_PATH);
         FilenameAndHashVo filenameAndHashVo = iFileService.upload(file, path);
 
         return ServerResponse.createBySuccess(filenameAndHashVo);

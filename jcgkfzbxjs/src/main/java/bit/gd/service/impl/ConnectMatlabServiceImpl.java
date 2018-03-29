@@ -331,7 +331,7 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
     }
 
     private GDResultPwo fillGDResultPwoFilepath(GDResultPwo gdResultPwo) {
-        String sourcePath = opcOutputPath + gdResultPwo.getUserNo() + File.separator;
+        String sourcePath = pwoOutputPath + gdResultPwo.getUserNo() + File.separator;
         gdResultPwo.setErrorMat(iFileService
                 .uploadMatlabOutputFile(Const.PwoMatlabOutputFilename.PWO_Error_Mat, sourcePath, Const.RESULT_PATH_PWO));
         gdResultPwo.setErrorConvergencePupilPng(iFileService

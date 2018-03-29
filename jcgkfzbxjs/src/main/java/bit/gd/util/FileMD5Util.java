@@ -33,11 +33,11 @@ public class FileMD5Util {
 
     public static String getMD5Checksum(InputStream inputStream) throws Exception {
         byte[] b = createChecksum(inputStream);
-        String result = "";
+        StringBuilder sb = new StringBuilder();
 
         for (int i=0; i < b.length; i++) {
-            result += Integer.toString( ( b[i] & 0xff ) + 0x100, 16).substring(1);//加0x100是因为有的b[i]的十六进制只有1位
+            sb.append(Integer.toString( ( b[i] & 0xff ) + 0x100, 16).substring(1));//加0x100是因为有的b[i]的十六进制只有1位
         }
-        return result;
+        return sb.toString();
     }
 }

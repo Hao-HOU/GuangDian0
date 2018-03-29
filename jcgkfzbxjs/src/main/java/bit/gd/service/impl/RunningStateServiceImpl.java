@@ -14,6 +14,8 @@ import bit.gd.util.PropertiesUtil;
 import bit.gd.vo.OpcIntermediateFileVo;
 import bit.gd.vo.PwoIntermediateFileVo;
 import bit.gd.vo.SmoIntermediateFileVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,8 @@ import java.io.File;
  */
 @Service
 public class RunningStateServiceImpl implements IRunningStateService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RunningStateServiceImpl.class);
+
     @Autowired
     IFileService iFileService;
 

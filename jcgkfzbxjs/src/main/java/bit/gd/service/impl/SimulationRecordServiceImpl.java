@@ -44,6 +44,12 @@ public class SimulationRecordServiceImpl implements ISimulationRecordService{
     @Autowired
     GDResultOpcMapper gdResultOpcMapper;
 
+    @Autowired
+    GDParameterPwoMapper gdParameterPwoMapper;
+
+    @Autowired
+    GDResultPwoMapper gdResultPwoMapper;
+
     public ServerResponse<PageInfo> getAllSimulationRecords(SearchSimulationRecordsRequest searchSimulationRecordsRequest) {
         PageHelper.startPage(searchSimulationRecordsRequest.getPageNum(), searchSimulationRecordsRequest.getPageSize());
 
@@ -111,7 +117,8 @@ public class SimulationRecordServiceImpl implements ISimulationRecordService{
             case Const.Module.MODULE_PDOD:
                 return ServerResponse.createBySuccessMessage("PDOD模块暂未实现");
             case Const.Module.MODULE_SMPWO:
-                return ServerResponse.createBySuccessMessage("SMPWO模块暂未实现");
+                return ServerResponse.createBySuccess(getPwoSimulationRecordDetailVo(recordDetailRequest.getParametersId(),
+                        recordDetailRequest.getResultId()));
             default:
                 return ServerResponse.createByErrorMessage("模块名字错误");
         }
@@ -182,5 +189,36 @@ public class SimulationRecordServiceImpl implements ISimulationRecordService{
         opcSimulationRecordDetailVo.setIp(PropertiesUtil.getProperty("tomcat.ip"));
 
         return opcSimulationRecordDetailVo;
+    }
+
+    private PwoSimulationRecordDetailVo getPwoSimulationRecordDetailVo(int parametersId, int resultId) throws IOException {
+        PwoSimulationRecordDetailVo pwoSimulationRecordDetailVo = new PwoSimulationRecordDetailVo();
+        String uploadPath = System.getProperty("bit.gd") + File.separator + Const.UPLOAD_FILE_PATH;
+
+        GDParameterPwo gdParameterPwo = gdParameterPwoMapper.selectByPrimaryKey(parametersId);
+        FTPUtil.moveFile(Const.UPLOAD_FILE_PATH, gdParameterPwo.getInputData(), uploadPath);
+        pwoSimulationRecordDetailVo.setGdParameterPwo(gdParameterPwo);
+
+        String pwoResultPath = System.getProperty("bit.gd") + File.separator + Const.RESULT_PATH_PWO;
+
+        GDResultPwo gdResultPwo = gdResultPwoMapper.selectByPrimaryKey(resultId);
+        FTPUtil.moveFile(Const.RESULT_PATH_PWO, gdResultPwo.getErrorMat(), pwoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_PWO, gdResultPwo.getErrorConvergencePupilPng(), pwoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_PWO, gdResultPwo.getMaskPatternMat(), pwoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_PWO, gdResultPwo.getMaskPatternPng(), pwoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_PWO, gdResultPwo.getPrintImagePng(), pwoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_PWO, gdResultPwo.getSourcePatternMat(), pwoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_PWO, gdResultPwo.getSourcePatternPng(), pwoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_PWO, gdResultPwo.getTargetPatternMat(), pwoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_PWO, gdResultPwo.getTargetPatternPng(), pwoResultPath);
+        FTPUtil.moveFile(Const.RESULT_PATH_PWO, gdResultPwo.getTheitaPupilPng(), pwoResultPath);
+
+        String errorMatPath = pwoResultPath + File.separator + gdResultPwo.getErrorMat();
+        pwoSimulationRecordDetailVo.setError(JMatIOUtil.getPwoErrorMatValue(errorMatPath));
+        pwoSimulationRecordDetailVo.setGdResultPwo(gdResultPwo);
+
+        pwoSimulationRecordDetailVo.setIp(PropertiesUtil.getProperty("tomcat.ip"));
+
+        return pwoSimulationRecordDetailVo;
     }
 }

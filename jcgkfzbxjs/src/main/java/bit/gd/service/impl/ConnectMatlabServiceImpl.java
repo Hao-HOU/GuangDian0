@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import syyopc.Opc;
 import syysmo.Smo;
 
 import java.io.File;
@@ -82,9 +83,12 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
             gdRunningStateMapper.updateByUserNoAndModuleName(userNo, Const.Module.MODULE_SMO, Const.RunningState.IDLE);
             return ServerResponse.createByErrorMessage("仿真失败");
         }  finally {
-            if (smo != null) {
-                smo.dispose();
+            try {
+                smo.closepool();
+            } catch (MWException e) {
+                e.printStackTrace();
             }
+            smo.dispose();
         }
 
         Date endTime = new Date();
@@ -160,12 +164,33 @@ public class ConnectMatlabServiceImpl implements IConnectMatlabService {
         }
         Date startTime = new Date();
 
-        //TODO   opc模块matlab函数调用
+        Opc opc = null;
         try {
-            Thread.sleep(20000);
-        } catch (InterruptedException e) {
+            opc = new Opc();
+            opc.EUV_OPC_main(4, gdParameterOpc.getCoreNum(), gdParameterOpc.getMaskDimension(),
+                    gdParameterOpc.getPixelSize(), gdParameterOpc.getReflect(), gdParameterOpc.getAbsorb(),
+                    gdParameterOpc.getShadowNear(), gdParameterOpc.getShadowFar(), gdParameterOpc.getWavelength(),
+                    gdParameterOpc.getSigmaIn(), gdParameterOpc.getSigmaOut(), gdParameterOpc.getNa(),
+                    gdParameterOpc.getRatio(), gdParameterOpc.getStepMain(), gdParameterOpc.getStepSraf(),
+                    gdParameterOpc.getOmegaQua(), gdParameterOpc.getMaxloopOpc(), gdParameterOpc.getThreshold(),
+                    gdParameterOpc.getTr(), gdParameterOpc.getaSource(),
+                    PropertiesUtil.getProperty("ftp.server.path") + Const.UPLOAD_FILE_PATH + File.separator + gdParameterOpc.getInputMask(),
+                    outputDir + File.separator);
+
+        } catch (MWException e) {
             e.printStackTrace();
+            gdParameterOpcMapper.deleteByPrimaryKey(gdParameterOpc.getId());
+            gdRunningStateMapper.updateByUserNoAndModuleName(userNo, Const.Module.MODULE_OPC, Const.RunningState.IDLE);
+            return ServerResponse.createByErrorMessage("仿真失败");
+        } finally {
+            try {
+                opc.closepool();
+            } catch (MWException e) {
+                e.printStackTrace();
+            }
+            opc.dispose();
         }
+
 
         Date endTime = new Date();
 

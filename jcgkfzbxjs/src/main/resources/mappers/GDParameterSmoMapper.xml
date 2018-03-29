@@ -414,4 +414,11 @@
     and
     a_source = #{aSource,jdbcType=DOUBLE}
   </select>
+
+  <select id="selectMaxloop" resultType="java.lang.Double" parameterType="java.lang.String" >
+    SELECT maxloop_smo FROM gd_parameter_smo
+    where user_no = #{userNo,jdbcType=VARCHAR}
+    ORDER BY id DESC
+    LIMIT 1
+  </select>
 </mapper>

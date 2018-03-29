@@ -367,4 +367,11 @@
     and core_num = #{coreNum,jdbcType=DOUBLE}
     and input_mask_hash = #{inputMaskHash,jdbcType=VARCHAR}
   </select>
+
+  <select id="selectMaxloop" resultType="java.lang.Double" parameterType="java.lang.String" >
+    SELECT maxloop_opc FROM gd_parameter_opc
+    where user_no = #{userNo,jdbcType=VARCHAR}
+    ORDER BY id DESC
+    LIMIT 1
+  </select>
 </mapper>

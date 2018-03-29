@@ -12,6 +12,7 @@ public class OpcIntermediateFileVo {
     private double error;
     private double errorWeight;
     private double iterationCount;
+    private int progress;
     private String ip;
     private String opcErrorConvergencePng;
     private String opcMaskPatternPng;
@@ -50,6 +51,14 @@ public class OpcIntermediateFileVo {
 
     public void setIterationCount(double iterationCount) {
         this.iterationCount = iterationCount;
+    }
+
+    public int getProgress() {
+        return progress;
+    }
+
+    public void setProgress(int progress) {
+        this.progress = progress;
     }
 
     public String getIp() {

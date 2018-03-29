@@ -3,6 +3,8 @@ package bit.gd.service.impl;
 import bit.gd.common.Const;
 import bit.gd.common.ResponseCode;
 import bit.gd.common.ServerResponse;
+import bit.gd.dao.GDParameterOpcMapper;
+import bit.gd.dao.GDParameterSmoMapper;
 import bit.gd.pojo.GDRunningState;
 import bit.gd.service.IFileService;
 import bit.gd.service.IRunningStateService;
@@ -22,6 +24,12 @@ import java.io.File;
 public class RunningStateServiceImpl implements IRunningStateService {
     @Autowired
     IFileService iFileService;
+
+    @Autowired
+    GDParameterSmoMapper gdParameterSmoMapper;
+
+    @Autowired
+    GDParameterOpcMapper gdParameterOpcMapper;
 
     public ServerResponse getIntermediateFile(String moduleName, String userNo, GDRunningState gdRunningState) {
         switch (moduleName) {
@@ -49,6 +57,9 @@ public class RunningStateServiceImpl implements IRunningStateService {
                     + userNo + File.separator + Const.SmoMatlabOutputFilename.SMO_Iteration_Times_Mat);
             smoIntermediateFileVo.setIterationCount(iterationCount);
 
+            double maxloop = gdParameterSmoMapper.selectMaxloop(userNo);
+            smoIntermediateFileVo.setProgress((int) ((iterationCount / maxloop) * 100));
+
             return ServerResponse.createBySuccessCodeMessage(ResponseCode.RUNNING.getCode(), "已有中间结果", smoIntermediateFileVo);
         } else {
             return ServerResponse.createBySuccessCodeMessage(ResponseCode.RUNNING.getCode(), "暂无中间结果", gdRunningState);
@@ -69,6 +80,9 @@ public class RunningStateServiceImpl implements IRunningStateService {
             double iterationCount = JMatIOUtil.getIterationCount(PropertiesUtil.getProperty("matlab.output.path.opc")
                     + userNo + File.separator + Const.OpcMatlabOutputFilename.OPC_Iteration_Times_Mat);
             opcIntermediateFileVo.setIterationCount(iterationCount);
+
+            double maxloop = gdParameterOpcMapper.selectMaxloop(userNo);
+            opcIntermediateFileVo.setProgress((int) ((iterationCount / maxloop) * 100));
 
             return ServerResponse.createBySuccessCodeMessage(ResponseCode.RUNNING.getCode(), "已有中间结果", opcIntermediateFileVo);
         } else {

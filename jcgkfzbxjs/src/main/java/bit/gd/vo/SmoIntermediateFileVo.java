@@ -11,6 +11,7 @@ import java.io.File;
 public class SmoIntermediateFileVo {
     private double error;
     private double iterationCount;
+    private int progress;
     private String ip;
     private String smoErrorConvergencePng;
     private String smoMaskPatternPng;
@@ -41,6 +42,14 @@ public class SmoIntermediateFileVo {
 
     public void setIterationCount(double iterationCount) {
         this.iterationCount = iterationCount;
+    }
+
+    public int getProgress() {
+        return progress;
+    }
+
+    public void setProgress(int progress) {
+        this.progress = progress;
     }
 
     public String getIp() {

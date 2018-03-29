@@ -18,4 +18,6 @@ public interface GDParameterSmoMapper {
     int updateByPrimaryKey(GDParameterSmo record);
 
     List<GDParameterSmo> selectByRecord(GDParameterSmo record);
+
+    Double selectMaxloop(String userNo);
 }

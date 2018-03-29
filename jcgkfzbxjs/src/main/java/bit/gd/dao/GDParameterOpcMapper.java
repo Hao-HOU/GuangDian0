@@ -18,4 +18,6 @@ public interface GDParameterOpcMapper {
     int updateByPrimaryKey(GDParameterOpc record);
 
     List<GDParameterOpc> selectByRecord(GDParameterOpc record);
+
+    Double selectMaxloop(String userNo);
 }

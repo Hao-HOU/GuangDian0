@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="bit.gd.dao.GDParameterPwoMapper" >
+  <resultMap id="BaseResultMap" type="bit.gd.pojo.GDParameterPwo" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="user_no" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="wavelength" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="na" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="ratio" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="polarization" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="refractive_index" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="pixel" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="step_pupil" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="omega_pupil" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="zterm" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="resist_slope" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="threshold" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="dimension" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="maxloop" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="core_num" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="input_data" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="input_data_hash" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="update_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_no, wavelength, na, ratio, polarization, refractive_index, pixel, step_pupil, 
+    omega_pupil, zterm, resist_slope, threshold, dimension, maxloop, core_num, input_data, 
+    input_data_hash, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gd_parameter_pwo
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gd_parameter_pwo
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="bit.gd.pojo.GDParameterPwo" >
+    insert into gd_parameter_pwo (id, user_no, wavelength, 
+      na, ratio, polarization, 
+      refractive_index, pixel, step_pupil, 
+      omega_pupil, zterm, resist_slope, 
+      threshold, dimension, maxloop, 
+      core_num, input_data, input_data_hash, 
+      create_time, update_time)
+    values (#{id,jdbcType=INTEGER}, #{userNo,jdbcType=VARCHAR}, #{wavelength,jdbcType=DOUBLE}, 
+      #{na,jdbcType=DOUBLE}, #{ratio,jdbcType=DOUBLE}, #{polarization,jdbcType=DOUBLE}, 
+      #{refractiveIndex,jdbcType=DOUBLE}, #{pixel,jdbcType=DOUBLE}, #{stepPupil,jdbcType=DOUBLE}, 
+      #{omegaPupil,jdbcType=DOUBLE}, #{zterm,jdbcType=DOUBLE}, #{resistSlope,jdbcType=DOUBLE}, 
+      #{threshold,jdbcType=DOUBLE}, #{dimension,jdbcType=DOUBLE}, #{maxloop,jdbcType=DOUBLE}, 
+      #{coreNum,jdbcType=DOUBLE}, #{inputData,jdbcType=VARCHAR}, #{inputDataHash,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="bit.gd.pojo.GDParameterPwo" >
+    insert into gd_parameter_pwo
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userNo != null" >
+        user_no,
+      </if>
+      <if test="wavelength != null" >
+        wavelength,
+      </if>
+      <if test="na != null" >
+        na,
+      </if>
+      <if test="ratio != null" >
+        ratio,
+      </if>
+      <if test="polarization != null" >
+        polarization,
+      </if>
+      <if test="refractiveIndex != null" >
+        refractive_index,
+      </if>
+      <if test="pixel != null" >
+        pixel,
+      </if>
+      <if test="stepPupil != null" >
+        step_pupil,
+      </if>
+      <if test="omegaPupil != null" >
+        omega_pupil,
+      </if>
+      <if test="zterm != null" >
+        zterm,
+      </if>
+      <if test="resistSlope != null" >
+        resist_slope,
+      </if>
+      <if test="threshold != null" >
+        threshold,
+      </if>
+      <if test="dimension != null" >
+        dimension,
+      </if>
+      <if test="maxloop != null" >
+        maxloop,
+      </if>
+      <if test="coreNum != null" >
+        core_num,
+      </if>
+      <if test="inputData != null" >
+        input_data,
+      </if>
+      <if test="inputDataHash != null" >
+        input_data_hash,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userNo != null" >
+        #{userNo,jdbcType=VARCHAR},
+      </if>
+      <if test="wavelength != null" >
+        #{wavelength,jdbcType=DOUBLE},
+      </if>
+      <if test="na != null" >
+        #{na,jdbcType=DOUBLE},
+      </if>
+      <if test="ratio != null" >
+        #{ratio,jdbcType=DOUBLE},
+      </if>
+      <if test="polarization != null" >
+        #{polarization,jdbcType=DOUBLE},
+      </if>
+      <if test="refractiveIndex != null" >
+        #{refractiveIndex,jdbcType=DOUBLE},
+      </if>
+      <if test="pixel != null" >
+        #{pixel,jdbcType=DOUBLE},
+      </if>
+      <if test="stepPupil != null" >
+        #{stepPupil,jdbcType=DOUBLE},
+      </if>
+      <if test="omegaPupil != null" >
+        #{omegaPupil,jdbcType=DOUBLE},
+      </if>
+      <if test="zterm != null" >
+        #{zterm,jdbcType=DOUBLE},
+      </if>
+      <if test="resistSlope != null" >
+        #{resistSlope,jdbcType=DOUBLE},
+      </if>
+      <if test="threshold != null" >
+        #{threshold,jdbcType=DOUBLE},
+      </if>
+      <if test="dimension != null" >
+        #{dimension,jdbcType=DOUBLE},
+      </if>
+      <if test="maxloop != null" >
+        #{maxloop,jdbcType=DOUBLE},
+      </if>
+      <if test="coreNum != null" >
+        #{coreNum,jdbcType=DOUBLE},
+      </if>
+      <if test="inputData != null" >
+        #{inputData,jdbcType=VARCHAR},
+      </if>
+      <if test="inputDataHash != null" >
+        #{inputDataHash,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="bit.gd.pojo.GDParameterPwo" >
+    update gd_parameter_pwo
+    <set >
+      <if test="userNo != null" >
+        user_no = #{userNo,jdbcType=VARCHAR},
+      </if>
+      <if test="wavelength != null" >
+        wavelength = #{wavelength,jdbcType=DOUBLE},
+      </if>
+      <if test="na != null" >
+        na = #{na,jdbcType=DOUBLE},
+      </if>
+      <if test="ratio != null" >
+        ratio = #{ratio,jdbcType=DOUBLE},
+      </if>
+      <if test="polarization != null" >
+        polarization = #{polarization,jdbcType=DOUBLE},
+      </if>
+      <if test="refractiveIndex != null" >
+        refractive_index = #{refractiveIndex,jdbcType=DOUBLE},
+      </if>
+      <if test="pixel != null" >
+        pixel = #{pixel,jdbcType=DOUBLE},
+      </if>
+      <if test="stepPupil != null" >
+        step_pupil = #{stepPupil,jdbcType=DOUBLE},
+      </if>
+      <if test="omegaPupil != null" >
+        omega_pupil = #{omegaPupil,jdbcType=DOUBLE},
+      </if>
+      <if test="zterm != null" >
+        zterm = #{zterm,jdbcType=DOUBLE},
+      </if>
+      <if test="resistSlope != null" >
+        resist_slope = #{resistSlope,jdbcType=DOUBLE},
+      </if>
+      <if test="threshold != null" >
+        threshold = #{threshold,jdbcType=DOUBLE},
+      </if>
+      <if test="dimension != null" >
+        dimension = #{dimension,jdbcType=DOUBLE},
+      </if>
+      <if test="maxloop != null" >
+        maxloop = #{maxloop,jdbcType=DOUBLE},
+      </if>
+      <if test="coreNum != null" >
+        core_num = #{coreNum,jdbcType=DOUBLE},
+      </if>
+      <if test="inputData != null" >
+        input_data = #{inputData,jdbcType=VARCHAR},
+      </if>
+      <if test="inputDataHash != null" >
+        input_data_hash = #{inputDataHash,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="bit.gd.pojo.GDParameterPwo" >
+    update gd_parameter_pwo
+    set user_no = #{userNo,jdbcType=VARCHAR},
+      wavelength = #{wavelength,jdbcType=DOUBLE},
+      na = #{na,jdbcType=DOUBLE},
+      ratio = #{ratio,jdbcType=DOUBLE},
+      polarization = #{polarization,jdbcType=DOUBLE},
+      refractive_index = #{refractiveIndex,jdbcType=DOUBLE},
+      pixel = #{pixel,jdbcType=DOUBLE},
+      step_pupil = #{stepPupil,jdbcType=DOUBLE},
+      omega_pupil = #{omegaPupil,jdbcType=DOUBLE},
+      zterm = #{zterm,jdbcType=DOUBLE},
+      resist_slope = #{resistSlope,jdbcType=DOUBLE},
+      threshold = #{threshold,jdbcType=DOUBLE},
+      dimension = #{dimension,jdbcType=DOUBLE},
+      maxloop = #{maxloop,jdbcType=DOUBLE},
+      core_num = #{coreNum,jdbcType=DOUBLE},
+      input_data = #{inputData,jdbcType=VARCHAR},
+      input_data_hash = #{inputDataHash,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

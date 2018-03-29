@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="bit.gd.dao.GDResultPwoMapper" >
+  <resultMap id="BaseResultMap" type="bit.gd.pojo.GDResultPwo" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="parameters_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="user_no" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="error_mat" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="error_convergence_pupil_png" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="mask_pattern_mat" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="mask_pattern_png" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="print_image_png" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="source_pattern_mat" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="source_pattern_png" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="target_pattern_mat" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="target_pattern_png" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="theita_pupil_png" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, parameters_id, user_no, error_mat, error_convergence_pupil_png, mask_pattern_mat, 
+    mask_pattern_png, print_image_png, source_pattern_mat, source_pattern_png, target_pattern_mat, 
+    target_pattern_png, theita_pupil_png, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gd_result_pwo
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gd_result_pwo
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="bit.gd.pojo.GDResultPwo" >
+    insert into gd_result_pwo (id, parameters_id, user_no, 
+      error_mat, error_convergence_pupil_png, mask_pattern_mat, 
+      mask_pattern_png, print_image_png, source_pattern_mat, 
+      source_pattern_png, target_pattern_mat, target_pattern_png, 
+      theita_pupil_png, create_time)
+    values (#{id,jdbcType=INTEGER}, #{parametersId,jdbcType=INTEGER}, #{userNo,jdbcType=VARCHAR}, 
+      #{errorMat,jdbcType=VARCHAR}, #{errorConvergencePupilPng,jdbcType=VARCHAR}, #{maskPatternMat,jdbcType=VARCHAR}, 
+      #{maskPatternPng,jdbcType=VARCHAR}, #{printImagePng,jdbcType=VARCHAR}, #{sourcePatternMat,jdbcType=VARCHAR}, 
+      #{sourcePatternPng,jdbcType=VARCHAR}, #{targetPatternMat,jdbcType=VARCHAR}, #{targetPatternPng,jdbcType=VARCHAR}, 
+      #{theitaPupilPng,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="bit.gd.pojo.GDResultPwo" >
+    insert into gd_result_pwo
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="parametersId != null" >
+        parameters_id,
+      </if>
+      <if test="userNo != null" >
+        user_no,
+      </if>
+      <if test="errorMat != null" >
+        error_mat,
+      </if>
+      <if test="errorConvergencePupilPng != null" >
+        error_convergence_pupil_png,
+      </if>
+      <if test="maskPatternMat != null" >
+        mask_pattern_mat,
+      </if>
+      <if test="maskPatternPng != null" >
+        mask_pattern_png,
+      </if>
+      <if test="printImagePng != null" >
+        print_image_png,
+      </if>
+      <if test="sourcePatternMat != null" >
+        source_pattern_mat,
+      </if>
+      <if test="sourcePatternPng != null" >
+        source_pattern_png,
+      </if>
+      <if test="targetPatternMat != null" >
+        target_pattern_mat,
+      </if>
+      <if test="targetPatternPng != null" >
+        target_pattern_png,
+      </if>
+      <if test="theitaPupilPng != null" >
+        theita_pupil_png,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="parametersId != null" >
+        #{parametersId,jdbcType=INTEGER},
+      </if>
+      <if test="userNo != null" >
+        #{userNo,jdbcType=VARCHAR},
+      </if>
+      <if test="errorMat != null" >
+        #{errorMat,jdbcType=VARCHAR},
+      </if>
+      <if test="errorConvergencePupilPng != null" >
+        #{errorConvergencePupilPng,jdbcType=VARCHAR},
+      </if>
+      <if test="maskPatternMat != null" >
+        #{maskPatternMat,jdbcType=VARCHAR},
+      </if>
+      <if test="maskPatternPng != null" >
+        #{maskPatternPng,jdbcType=VARCHAR},
+      </if>
+      <if test="printImagePng != null" >
+        #{printImagePng,jdbcType=VARCHAR},
+      </if>
+      <if test="sourcePatternMat != null" >
+        #{sourcePatternMat,jdbcType=VARCHAR},
+      </if>
+      <if test="sourcePatternPng != null" >
+        #{sourcePatternPng,jdbcType=VARCHAR},
+      </if>
+      <if test="targetPatternMat != null" >
+        #{targetPatternMat,jdbcType=VARCHAR},
+      </if>
+      <if test="targetPatternPng != null" >
+        #{targetPatternPng,jdbcType=VARCHAR},
+      </if>
+      <if test="theitaPupilPng != null" >
+        #{theitaPupilPng,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="bit.gd.pojo.GDResultPwo" >
+    update gd_result_pwo
+    <set >
+      <if test="parametersId != null" >
+        parameters_id = #{parametersId,jdbcType=INTEGER},
+      </if>
+      <if test="userNo != null" >
+        user_no = #{userNo,jdbcType=VARCHAR},
+      </if>
+      <if test="errorMat != null" >
+        error_mat = #{errorMat,jdbcType=VARCHAR},
+      </if>
+      <if test="errorConvergencePupilPng != null" >
+        error_convergence_pupil_png = #{errorConvergencePupilPng,jdbcType=VARCHAR},
+      </if>
+      <if test="maskPatternMat != null" >
+        mask_pattern_mat = #{maskPatternMat,jdbcType=VARCHAR},
+      </if>
+      <if test="maskPatternPng != null" >
+        mask_pattern_png = #{maskPatternPng,jdbcType=VARCHAR},
+      </if>
+      <if test="printImagePng != null" >
+        print_image_png = #{printImagePng,jdbcType=VARCHAR},
+      </if>
+      <if test="sourcePatternMat != null" >
+        source_pattern_mat = #{sourcePatternMat,jdbcType=VARCHAR},
+      </if>
+      <if test="sourcePatternPng != null" >
+        source_pattern_png = #{sourcePatternPng,jdbcType=VARCHAR},
+      </if>
+      <if test="targetPatternMat != null" >
+        target_pattern_mat = #{targetPatternMat,jdbcType=VARCHAR},
+      </if>
+      <if test="targetPatternPng != null" >
+        target_pattern_png = #{targetPatternPng,jdbcType=VARCHAR},
+      </if>
+      <if test="theitaPupilPng != null" >
+        theita_pupil_png = #{theitaPupilPng,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="bit.gd.pojo.GDResultPwo" >
+    update gd_result_pwo
+    set parameters_id = #{parametersId,jdbcType=INTEGER},
+      user_no = #{userNo,jdbcType=VARCHAR},
+      error_mat = #{errorMat,jdbcType=VARCHAR},
+      error_convergence_pupil_png = #{errorConvergencePupilPng,jdbcType=VARCHAR},
+      mask_pattern_mat = #{maskPatternMat,jdbcType=VARCHAR},
+      mask_pattern_png = #{maskPatternPng,jdbcType=VARCHAR},
+      print_image_png = #{printImagePng,jdbcType=VARCHAR},
+      source_pattern_mat = #{sourcePatternMat,jdbcType=VARCHAR},
+      source_pattern_png = #{sourcePatternPng,jdbcType=VARCHAR},
+      target_pattern_mat = #{targetPatternMat,jdbcType=VARCHAR},
+      target_pattern_png = #{targetPatternPng,jdbcType=VARCHAR},
+      theita_pupil_png = #{theitaPupilPng,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

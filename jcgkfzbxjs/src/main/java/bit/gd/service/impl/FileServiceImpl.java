@@ -62,13 +62,20 @@ public class FileServiceImpl implements IFileService {
 
         //计算上传文件Hash值
         try {
-            InputStream inputStream = FTPUtil.getFile(Const.UPLOAD_FILE_PATH, targetFile.getName());
-            if (inputStream == null) {
-                LOGGER.info("文件Hash值计算失败");
-            } else {
-                filenameAndHashVo.setFileHash(FileMD5Util.getMD5Checksum(inputStream));
-                LOGGER.info("计算出的文件Hash值为：" + filenameAndHashVo.getFileHash());
-            }
+//            InputStream inputStream = FTPUtil.getFile(Const.UPLOAD_FILE_PATH, targetFile.getName());
+
+            File hashFile = new File(PropertiesUtil.getProperty("ftp.server.path")
+                    + Const.UPLOAD_FILE_PATH + File.separator + targetFile.getName());
+            InputStream inputStream = new FileInputStream(hashFile);
+            filenameAndHashVo.setFileHash(FileMD5Util.getMD5Checksum(inputStream));
+            LOGGER.info("计算出的文件Hash值为：" + filenameAndHashVo.getFileHash());
+
+//            if (inputStream == null) {
+//                LOGGER.info("文件Hash值计算失败");
+//            } else {
+//                filenameAndHashVo.setFileHash(FileMD5Util.getMD5Checksum(inputStream));
+//                LOGGER.info("计算出的文件Hash值为：" + filenameAndHashVo.getFileHash());
+//            }
 
         } catch (Exception e) {
             e.printStackTrace();
